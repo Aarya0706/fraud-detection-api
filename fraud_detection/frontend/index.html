@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FraudShield</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 40px;
+        }
+
+        .container {
+            width: 500px;
+            margin: auto;
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #334155;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>FraudShield AI</h1>
+
+        <label>Transaction Type</label>
+        <select id="type">
+            <option>PAYMENT</option>
+            <option>TRANSFER</option>
+            <option>CASH_OUT</option>
+            <option>DEBIT</option>
+            <option>CASH_IN</option>
+        </select>
+
+        <label>Amount</label>
+        <input id="amount" type="number">
+
+        <label>Old Balance Origin</label>
+        <input id="oldbalanceOrg" type="number">
+
+        <label>New Balance Origin</label>
+        <input id="newbalanceOrig" type="number">
+
+        <label>Old Balance Destination</label>
+        <input id="oldbalanceDest" type="number">
+
+        <label>New Balance Destination</label>
+        <input id="newbalanceDest" type="number">
+
+        <button onclick="checkFraud()">
+            Analyze Transaction
+        </button>
+
+        <div id="result" style="
+margin-top:20px;
+padding:20px;
+border-radius:10px;
+background:#0f172a;
+display:none;
+"></div>
+
+    </div>
+
+    <script>
+
+        async function checkFraud() {
+
+            const data = {
+                type: document.getElementById("type").value,
+                amount: Number(document.getElementById("amount").value),
+                oldbalanceOrg: Number(document.getElementById("oldbalanceOrg").value),
+                newbalanceOrig: Number(document.getElementById("newbalanceOrig").value),
+                oldbalanceDest: Number(document.getElementById("oldbalanceDest").value),
+                newbalanceDest: Number(document.getElementById("newbalanceDest").value)
+            };
+
+            const response = await fetch(
+                "http://localhost:8000/predict",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+            );
+
+            const result = await response.json();
+
+            document.getElementById("result").style.display = "block";
+
+document.getElementById("result").innerHTML = `
+<h2>${result.is_fraud ? "🔴 FRAUD DETECTED" : "🟢 LEGITIMATE TRANSACTION"}</h2>
+
+<p><b>Fraud Probability:</b> ${(result.fraud_probability * 100).toFixed(2)}%</p>
+
+<p><b>Risk Level:</b> ${result.risk_level}</p>
+
+<p><b>Summary:</b></p>
+<p>${result.summary}</p>
+`;
+        }
+
+    </script>
+
+</body>
+
+</html>
