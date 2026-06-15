@@ -5,12 +5,12 @@ AI-powered fraud detection system built using XGBoost, FastAPI, and a custom web
 
 ## Application Interface
 
-![App UI](fraud_detection/screenshots/app-ui.png)
+![App UI](screenshots/app-ui.png)
+
 
 
 ## Prediction Example
-
-![Prediction Result](fraud_detection/screenshots/prediction-result.png)
+![Prediction Result](screenshots/prediction-result.png)
 
 ## Features
 
