@@ -1,4 +1,23 @@
 # AI-Driven Financial Fraud Detection System
+# AI-Driven Financial Fraud Detection System
+
+AI-powered fraud detection system built using XGBoost, FastAPI, and a custom web interface.
+
+## Application Interface
+
+![App UI](screenshots/app-ui.png)
+
+## Prediction Example
+
+![Prediction Result](screenshots/prediction-result.png)
+
+## Features
+
+- Real-time fraud detection
+- Fraud probability scoring
+- Risk level classification
+- FastAPI REST API
+- Interactive web interface
 
 > XGBoost + FastAPI + GPT-3.5 | Trained on 6.3 M+ transactions | AUC 0.9998 | Precision 80% | Recall 99% | <100 ms inference
 
