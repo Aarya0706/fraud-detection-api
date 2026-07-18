@@ -1,6 +1,7 @@
 <div align="center">
 
-<img src="frontend/avatar.jpg" width="170"/>
+🛡️ FraudShield AI
+Enterprise Financial Fraud Detection Platform
 
 # 🛡️ FraudShield AI
 
