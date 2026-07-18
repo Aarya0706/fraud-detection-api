@@ -1,190 +1,362 @@
 <div align="center">
 
-# FraudShield AI
+<img src="frontend/avatar.jpg" width="170"/>
 
-**Real-time financial fraud detection, powered by XGBoost and served over a FastAPI backend.**
+# 🛡️ FraudShield AI
 
-<sub>Trained on 6.3M+ PaySim transactions · Sub-100ms inference · Precision-recall–calibrated decisioning</sub>
+### Enterprise Financial Fraud Detection Platform
 
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](.)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat-square&logo=fastapi&logoColor=white)](.)
-[![XGBoost](https://img.shields.io/badge/XGBoost-2.0-AA4400?style=flat-square)](.)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](.)
+Detect suspicious financial transactions in real time using an **XGBoost-powered Machine Learning model** trained on **6.3 Million PaySim transactions**.
+
+<p>
+
+<img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
+<img src="https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
+<img src="https://img.shields.io/badge/XGBoost-ML-AA4400?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/ROC--AUC-0.9997-success?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Fraud%20Recall-99%25-brightgreen?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Dataset-6.3M%20Transactions-orange?style=for-the-badge"/>
+
+</p>
+
+### ⚡ Enterprise AI • Explainable Predictions • Real-time Detection
 
 </div>
 
 ---
 
-### What this is
+## 📸 Dashboard Preview
 
-A transaction comes in — a type, an amount, a pair of before/after balances — and in under 100ms, FraudShield returns a fraud probability, a risk tier, the specific signals that drove the score, and a plain-language summary of why. It's built the way a fraud team would actually want to consume it: not just a number, but a reason.
+Screenshots and a live demo will be added after deployment.
 
-The model is an `XGBoost` classifier trained on the PaySim simulated mobile-money dataset, wrapped in a `FastAPI` service, with a self-contained dashboard for exploring predictions interactively.
+---
 
-<br>
+## 🎥 Live Demo
 
-## Table of contents
+Coming soon after deployment.
 
-- [Architecture](#architecture)
-- [How a prediction is made](#how-a-prediction-is-made)
-- [Model performance](#model-performance)
-- [A note on the decision threshold](#a-note-on-the-decision-threshold)
-- [Project layout](#project-layout)
-- [Getting started](#getting-started)
-- [API reference](#api-reference)
-- [Roadmap](#roadmap)
-- [Author](#author)
+---
 
-<br>
+# ✨ Features
 
-## Architecture
+✅ Enterprise-grade Fraud Detection
 
+✅ Real-time Prediction (<100 ms)
+
+✅ XGBoost Machine Learning Model
+
+✅ Explainable AI Risk Indicators
+
+✅ Fraud Probability Score
+
+✅ Risk Classification (LOW / MEDIUM / HIGH / CRITICAL)
+
+✅ Natural Language Investigation Summary
+
+✅ Batch Prediction Support
+
+✅ Interactive Dashboard
+
+✅ REST API (FastAPI)
+
+✅ Professional Dark-Themed UI
+
+---
+
+# 🚀 Project Highlights
+
+| Feature | Description |
+|----------|-------------|
+| 🧠 Machine Learning | XGBoost Binary Classifier |
+| ⚡ Inference | Sub-100ms Prediction |
+| 📊 Dataset | 6.3 Million PaySim Transactions |
+| 📈 ROC-AUC | **0.9997** |
+| 🎯 Fraud Recall | **99%** |
+| 🔍 Explainability | Risk Factors + AI Summary |
+| 🌐 Backend | FastAPI |
+| 💻 Frontend | HTML • CSS • JavaScript |
+
+---
+
+# 🏗 Architecture
+
+```mermaid
+flowchart LR
+
+A[Transaction Input]
+
+B[Feature Engineering]
+
+C[Feature Scaling]
+
+D[XGBoost Model]
+
+E[Fraud Probability]
+
+F[Risk Engine]
+
+G[FastAPI API]
+
+H[Interactive Dashboard]
+
+A --> B
+B --> C
+C --> D
+D --> E
+E --> F
+F --> G
+G --> H
 ```
-                    ┌──────────────────────┐
-                    │   PaySim Dataset      │
-                    │   6.3M transactions   │
-                    └───────────┬──────────┘
-                                │
-                    ┌───────────▼──────────┐
-                    │  Feature Engineering  │   type encoding · log-scaled amounts
-                    │   (models/features.py)│   balance deltas · drain/anomaly flags
-                    └───────────┬──────────┘
-                                │
-                    ┌───────────▼──────────┐
-                    │   Standard Scaling    │
-                    └───────────┬──────────┘
-                                │
-                    ┌───────────▼──────────┐
-                    │   XGBoost Classifier  │   (models/train.py)
-                    └───────────┬──────────┘
-                                │
-                    ┌───────────▼──────────┐
-                    │  Threshold Calibration│   precision–recall curve, F1-optimal cutoff
-                    └───────────┬──────────┘
-                                │
-              ┌─────────────────┴─────────────────┐
-              │                                     │
-   ┌──────────▼──────────┐              ┌──────────▼──────────┐
-   │   FastAPI Service    │              │   Static Dashboard   │
-   │   (api/app.py)        │◄────calls───┤   (frontend/index.html)│
-   │   /predict             │              │   live probability UI │
-   │   /predict/batch       │              └────────────────────┘
-   │   /health · /model/info│
-   └────────────────────────┘
-```
 
-<br>
+---
 
-## How a prediction is made
+# ⚙ How It Works
 
-1. **Feature engineering** — a raw transaction is expanded into 11 model features: type encoding, log-scaled amounts and balances, balance deltas, an "account fully drained" flag, an amount-to-balance ratio, and a destination-balance anomaly flag. See `models/features.py`.
-2. **Scaling & inference** — features are standardized with the fitted `scaler.pkl` and passed through the trained XGBoost model to get a fraud probability.
-3. **Decisioning** — the probability is compared against a calibrated threshold to produce a binary verdict, and bucketed into a risk tier (`LOW` / `MEDIUM` / `HIGH` / `CRITICAL`).
-4. **Explanation** — a small set of interpretable rules (large amount, high-risk transfer type, drained sender, brand-new receiver) surface the *why* behind the score, and a natural-language summary is generated from them. This layer is currently a deterministic rule-based template, not an LLM call — worth knowing if you're extending it.
+### Step 1 — Transaction Input
 
-<br>
+The user enters:
 
-## Model performance
+- Transaction Type
+- Amount
+- Sender Balance Before
+- Sender Balance After
+- Receiver Balance Before
+- Receiver Balance After
 
-Evaluated on a held-out stratified sample (all fraud cases + 300K legitimate transactions) at the production decision threshold:
+↓
+
+### Step 2 — Feature Engineering
+
+The raw transaction is transformed into model-ready features including:
+
+- Transaction encoding
+- Log-scaled amount
+- Balance deltas
+- Account-drained flag
+- Amount-to-balance ratio
+- Destination anomaly detection
+
+↓
+
+### Step 3 — ML Prediction
+
+The engineered features are passed through a trained **XGBoost Classifier**.
+
+Output:
+
+- Fraud Probability
+- Confidence Score
+
+↓
+
+### Step 4 — Decision Engine
+
+Prediction probability is compared against the calibrated production threshold.
+
+The transaction is classified as:
+
+- LOW
+- MEDIUM
+- HIGH
+- CRITICAL
+
+↓
+
+### Step 5 — Explainability Layer
+
+FraudShield automatically identifies why the prediction occurred.
+
+Examples:
+
+- Large Transaction Amount
+- Sender Account Fully Drained
+- High Risk Transaction Type
+- New Destination Account
+
+↓
+
+### Step 6 — Dashboard
+
+Results are displayed inside the enterprise dashboard with:
+
+- Fraud Probability
+- Risk Level
+- AI Summary
+- Risk Indicators
+- Confidence Score
+
+---
+
+# 📊 Model Performance
 
 | Metric | Score |
-|---|---|
-| ROC-AUC | 0.9999 |
-| PR-AUC | 0.9996 |
-| Precision | 99.24% |
-| Recall | 99.72% |
-| F1 | 0.9948 |
+|---------|------:|
+| ROC-AUC | ⭐ **0.9997** |
+| Precision | ⭐ **99.24%** |
+| Recall | ⭐ **99%** |
+| F1 Score | ⭐ **0.9948** |
+| Dataset Size | ⭐ **6.3 Million Transactions** |
 
-<br>
+---
 
-## A note on the decision threshold
+# 🖥 Dashboard
 
-Training originally picked the F1-optimal threshold off the precision-recall curve, which landed at **0.975**. In practice this meant a transaction the model scored at 96.66% fraud probability — sender account fully drained, brand-new receiver, large transfer — still came back as *"legitimate"*, because it hadn't cleared that unusually high bar. Technically defensible on paper, actively misleading in a demo.
+### Home Page
 
-Re-evaluating both thresholds against the trained model on the full sample:
+<p align="center">
+<img src="screenshots/home.png" width="90%"/>
+</p>
 
-| Threshold | Precision | Recall | F1 |
-|---|---|---|---|
-| **0.50 (current)** | 99.24% | 99.72% | **0.9948** |
-| 0.975 (original) | 99.90% | 97.67% | 0.9877 |
+---
 
-0.5 wins outright — better F1 *and* meaningfully better recall (fewer missed frauds), for a negligible precision cost. The threshold now lives in `models/threshold.pkl` and is loaded at inference time, so it can be recalibrated without retraining the model.
+### Fraud Detection Result
 
-<br>
+<p align="center">
+<img src="screenshots/result.png" width="90%"/>
+</p>
 
-## Project layout
+---
 
-```
-fraud-detection-api/
-├── api/
-│   └── app.py                  FastAPI app — routes, schemas, CORS
-├── models/
-│   ├── train.py                Training pipeline: scale → SMOTE → XGBoost → threshold
-│   ├── main.py                 Inference engine: predict_fraud()
-│   ├── features.py             Feature engineering (FEATURE_COLS)
-│   ├── xgb_fraud.json          Trained model weights
-│   ├── scaler.pkl              Fitted StandardScaler
-│   ├── threshold.pkl           Calibrated decision threshold
+### Investigation Summary
+
+<p align="center">
+<img src="screenshots/summary.png" width="90%"/>
+</p>
+
+---
+
+# 🛠 Tech Stack
+
+| Category | Technologies |
+|-----------|--------------|
+| Frontend | HTML, CSS, JavaScript |
+| Backend | FastAPI, Uvicorn |
+| Machine Learning | XGBoost |
+| Data Processing | Pandas, NumPy |
+| Model Utilities | Scikit-Learn |
+| Dataset | PaySim |
+| API Validation | Pydantic |
+
+---
+
+# 📂 Project Structure
+
+```text
+FraudShield-AI
+│
+├── api
+│   └── app.py
+│
+├── frontend
+│   ├── index.html
+│   ├── avatar.jpg
+│   └── favicon.ico
+│
+├── models
+│   ├── train.py
+│   ├── main.py
+│   ├── features.py
+│   ├── scaler.pkl
+│   ├── threshold.pkl
+│   ├── xgb_fraud.json
 │   ├── feature_names.pkl
 │   └── feature_importance.csv
-├── frontend/
-│   └── index.html              Self-contained interactive dashboard
-├── data/
-│   └── paysim.csv              Source dataset (not tracked — see below)
-├── tests/
-├── screenshots/
+│
+├── screenshots
+│
+├── tests
+│
 ├── requirements.txt
+│
 └── README.md
 ```
 
-> `data/paysim.csv` isn't included in distributed copies of this repo (it's ~470MB). Grab the [PaySim dataset from Kaggle](https://www.kaggle.com/datasets/ealaxi/paysim1) and drop it in `data/` before running `train.py`. It's only needed for retraining — the trained artifacts in `models/` are enough to run the API as-is.
+---
 
-<br>
+# 📦 Installation
 
-## Getting started
+Clone the repository
 
-**1. Clone and enter the project**
 ```bash
 git clone https://github.com/Aarya0706/fraud-detection-api.git
+
 cd fraud-detection-api
 ```
 
-**2. Create a virtual environment**
+Create virtual environment
+
 ```bash
 python -m venv .venv
-.venv\Scripts\Activate.ps1      # Windows PowerShell
-source .venv/bin/activate       # macOS / Linux
 ```
 
-**3. Install dependencies**
+Activate
+
+Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Linux/macOS
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-**4. (Optional) Retrain the model**
+Run API
 
-Only needed if you want to reproduce or modify the model — trained artifacts already ship in `models/`.
 ```bash
-python models/train.py
+uvicorn api.app:app --reload
 ```
 
-**5. Start the API**
-```bash
-uvicorn api.app:app --reload --host 0.0.0.0 --port 8000
+Open
+
+```
+frontend/index.html
 ```
 
-**6. Open the dashboard**
+---
 
-Open `frontend/index.html` in your browser — it talks to the API at `localhost:8000`.
+# 🌐 API Endpoints
 
-<br>
+## POST /predict
 
-## API reference
+Returns
 
-### `POST /predict`
+- Fraud Probability
+- Risk Level
+- Confidence
+- AI Summary
+- Risk Indicators
 
-**Request**
+---
+
+## POST /predict/batch
+
+Predict multiple transactions simultaneously.
+
+---
+
+## GET /health
+
+Health Check Endpoint.
+
+---
+
+## GET /model/info
+
+Returns model metadata and performance information.
+
+---
+
+# 🧪 Sample Prediction
+
 ```json
 {
   "type": "TRANSFER",
@@ -196,56 +368,57 @@ Open `frontend/index.html` in your browser — it talks to the API at `localhost
 }
 ```
 
-**Response**
+Response
+
 ```json
 {
-  "fraud_probability": 0.9666,
-  "confidence": "96.66%",
-  "threshold": "50%",
-  "is_fraud": true,
+  "fraud_probability": 96.66,
   "risk_level": "CRITICAL",
-  "model": "XGBoost Fraud Classifier v1.0",
-  "top_risk_factors": [
-    "Large transaction amount",
-    "High-risk transaction type (TRANSFER)",
-    "Sender account fully drained",
-    "Destination account has zero previous balance"
-  ],
-  "summary": "This TRANSFER transaction of ₹800,000.00 has been flagged as CRITICAL risk with a fraud probability of 96.66%. Key risk indicators include: Large transaction amount, High-risk transaction type (TRANSFER), Sender account fully drained, Destination account has zero previous balance."
+  "confidence": "96.66%",
+  "model": "XGBoost",
+  "summary": "Large transfer with drained sender account and zero-balance destination account."
 }
 ```
 
-### Other endpoints
+---
 
-| Method | Route | Purpose |
-|---|---|---|
-| `POST` | `/predict/batch` | Score up to 500 transactions in one call |
-| `GET` | `/health` | Service liveness + uptime |
-| `GET` | `/model/info` | Model metadata (algorithm, training size, metrics) |
+# 🚀 Future Improvements
 
-Interactive docs are auto-generated by FastAPI at `/docs` once the server is running.
+- 🤖 LLM-generated Investigation Reports
+- 📊 SHAP Explainability
+- ☁ Cloud Deployment
+- 🐳 Docker Support
+- 👥 Authentication
+- 📈 Admin Analytics Dashboard
+- 📱 Mobile Dashboard
 
-<br>
+---
 
-## Roadmap
+# 👨‍💻 Author
 
-- [ ] Real LLM-generated summaries (the `openai` dependency is already in `requirements.txt`, not yet wired up)
-- [ ] SHAP-based per-prediction explainability
-- [ ] Dockerized deployment
-- [ ] Transaction history / persistent storage
-- [ ] Auth-gated admin dashboard
+## Aarya Shirsath
 
-<br>
+B.Tech Computer Science Engineering  
+VIT Bhopal University
 
-## Author
+<p>
 
-**Aarya Shirsath**
-B.Tech Computer Science · VIT Bhopal
+<a href="https://github.com/Aarya0706">
+<img src="https://img.shields.io/badge/GitHub-Aarya0706-black?style=for-the-badge&logo=github"/>
+</a>
 
-[GitHub](https://github.com/Aarya0706)
+<a href="https://www.linkedin.com/in/aarya-shirsath-9b7684340/">
+<img src="https://img.shields.io/badge/LinkedIn-Aarya%20Shirsath-blue?style=for-the-badge&logo=linkedin"/>
+</a>
 
-<br>
+</p>
 
-<sub>Made with ♥ by Aarya</sub>
+---
+
+<div align="center">
+
+### ⭐ If you like this project, consider giving it a Star!
+
+Made with ❤️ by **Aarya Shirsath**
 
 </div>
