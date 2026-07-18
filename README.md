@@ -34,7 +34,9 @@ Screenshots and a live demo will be added after deployment.
 
 ## 🎥 Live Demo
 
-Coming soon after deployment.
+- **Frontend:** https://fraud-detection-api-eta.vercel.app
+- **API Docs:** https://fraud-detection-api-production-f9a6.up.railway.app/docs
+- **Backend API:** https://fraud-detection-api-production-f9a6.up.railway.app
 
 ---
 
@@ -110,6 +112,61 @@ G --> H
 ```
 
 ---
+## 📸 Application Preview
+
+### 🏠 Home Dashboard
+
+<p align="center">
+  <img src="screenshots/home.png" width="900">
+</p>
+
+---
+
+### 🚨 High-Risk Fraud Detection
+
+<p align="center">
+  <img src="screenshots/fraud.png" width="900">
+</p>
+
+---
+
+### ✅ Legitimate Transaction Detection
+
+<p align="center">
+  <img src="screenshots/legitimate.png" width="900">
+</p>
+
+---
+
+### 📊 Model Insights
+
+<p align="center">
+  <img src="screenshots/insights.png" width="900">
+</p>
+
+---
+
+### 📖 About FraudShield AI
+
+<p align="center">
+  <img src="screenshots/about.png" width="900">
+</p>
+
+---
+
+### 👩‍💻 Developer
+
+<p align="center">
+  <img src="screenshots/developer.png" width="900">
+</p>
+
+---
+
+### 📚 Interactive API Documentation
+
+<p align="center">
+  <img src="screenshots/api-docs.png" width="900">
+</p>
 
 # ⚙ How It Works
 
