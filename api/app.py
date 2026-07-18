@@ -17,6 +17,7 @@ from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 # import prediction engine
@@ -87,6 +88,12 @@ app.add_middleware(
 )
 
 _startup_time = time.time()
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    """Friendly landing route — sends visitors to the interactive API docs."""
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health", tags=["System"])
