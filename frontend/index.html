@@ -1014,6 +1014,30 @@ filter:drop-shadow(0 0 9px #fbbf24);
 
 }
 
+.about-links{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+.about-links a{
+    text-decoration:none;
+    padding:14px 24px;
+    border-radius:12px;
+    background:#20273b;
+    color:white;
+    font-weight:600;
+    border:1px solid rgba(255,255,255,.08);
+    transition:all .3s ease;
+}
+
+.about-links a:hover{
+    transform:translateY(-3px);
+    background:#2b3452;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
+
 </style>
 
 </head>
@@ -1466,47 +1490,48 @@ style="background:#16a34a;">
         <br>
 
         <p>
-
-        FraudShield AI is an enterprise-inspired fraud detection platform built using Machine Learning and FastAPI.
-
+            FraudShield AI is an <strong>enterprise-inspired financial fraud detection platform</strong>
+            developed using <strong>Python</strong>, <strong>FastAPI</strong>,
+            <strong>XGBoost</strong>, and modern web technologies.
         </p>
 
         <br>
 
         <p>
-
-        It analyzes financial transactions in real time using an XGBoost model trained on over 6.3 million PaySim transactions.
-
+            The system analyzes financial transactions in real time using an
+            <strong>XGBoost machine learning model</strong> trained on
+            <strong>6.3 million+ PaySim transactions</strong>, generating fraud
+            probability, confidence scores, risk levels, and explainable insights
+            within milliseconds.
         </p>
 
         <br>
 
         <p>
-
-        The system predicts fraud probability, assigns a risk level, highlights important risk factors and generates a plain-language explanation automatically.
-
+            It combines machine learning with an interactive dashboard to help
+            analysts identify suspicious transactions through intelligent risk
+            scoring, interpretable explanations, and business-friendly recommendations.
         </p>
 
         <br>
 
-        <a href="https://github.com/Aarya0706/fraud-detection-api" target="_blank" style="
-        display:inline-flex;
-        align-items:center;
-        gap:10px;
-        padding:12px 22px;
-        border-radius:14px;
-        background:rgba(255,255,255,.04);
-        border:1px solid rgba(255,255,255,.12);
-        color:#e2e8f0;
-        text-decoration:none;
-        font-weight:500;
-        font-size:15px;
-        transition:.3s;
-        ">
-        🔗 View source on GitHub
-        </a>
+        <div class="about-links">
+
+            <a href="https://github.com/Aarya0706/fraud-detection-api"
+               target="_blank">
+                📂 GitHub Repository
+            </a>
+
+            <a href="https://fraud-detection-api-production-f9a6.up.railway.app/docs"
+               target="_blank">
+                🚀 Live API Docs
+            </a>
+
+        </div>
 
     </div>
+
+</div>
 
     <div class="card">
 
