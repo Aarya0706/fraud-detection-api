@@ -509,6 +509,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 # 👩‍💻 Developer
 
+<p align="center">
+<img src="screenshots/developer-photo.jpeg" width="220" style="border-radius:50%;">
+</p>
+
 ## Aarya Shirsath
 
 B.Tech Computer Science Engineering
