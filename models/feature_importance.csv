@@ -1,0 +1,12 @@
+Feature,Importance
+orig_drained,0.36695728
+balance_change_orig,0.30968127
+amount_ratio_orig,0.2276504
+log_oldbalanceOrg,0.025552822
+type_enc,0.02191803
+log_newbalanceOrig,0.018438287
+log_amount,0.016194751
+balance_change_dest,0.0055817845
+log_newbalanceDest,0.0040265326
+dest_balance_anomaly,0.0028279417
+log_oldbalanceDest,0.0011709653

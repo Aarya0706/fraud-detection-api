@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FraudShield AI | Real-Time Fraud Detection</title>
+
+<link rel="icon" href="favicon.ico">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:
+radial-gradient(circle at top left,#1d4ed822,transparent 30%),
+radial-gradient(circle at bottom right,#fbbf2420,transparent 35%),
+linear-gradient(135deg,#050505,#0a0f1c,#111827);
+
+min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+padding:20px;
+
+color:#f8fafc;
+
+overflow-x:hidden;
+
+}
+
+.container{
+
+width:1000px;
+max-width:1000px;
+
+background:rgba(12,15,26,.82);
+
+backdrop-filter:blur(30px);
+
+border:1px solid rgba(255,255,255,.06);
+
+border-radius:28px;
+
+padding:40px;
+
+box-shadow:
+0 25px 80px rgba(0,0,0,.65);
+
+animation:fadeIn .8s ease;
+
+}
+
+.ai-text{
+    color:#60a5fa;
+    animation:glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow{
+    from{
+        text-shadow:0 0 8px rgba(96,165,250,.4);
+    }
+    to{
+        text-shadow:
+        0 0 12px rgba(96,165,250,.8),
+        0 0 25px rgba(96,165,250,.6);
+    }
+}
+
+@keyframes shine{
+0%{background-position:-200%;}
+100%{background-position:200%;}
+}
+
+h1{
+animation:glow 4s ease-in-out infinite;
+
+font-size:34px;
+font-weight:700;
+
+text-align:center;
+
+margin-bottom:10px;
+
+}
+
+@keyframes glow{
+
+50%{
+
+text-shadow:
+0 0 35px rgba(59,130,246,.45),
+0 0 15px rgba(251,191,36,.25);
+
+}
+
+}
+
+.subtitle{
+    max-width:760px;
+    width:100%;
+    margin:20px auto 35px;
+    text-align:center;
+}
+
+.badges-row{
+
+display:flex;
+justify-content:center;
+gap:18px;
+flex-wrap:wrap;
+margin-bottom:35px;
+
+}
+
+.badge{
+
+padding:10px 18px;
+
+background:rgba(255,255,255,.05);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.1);
+
+border-radius:14px;
+
+font-size:14px;
+font-weight:500;
+color:#e2e8f0;
+
+box-shadow:
+0 8px 18px rgba(0,0,0,.3);
+
+}
+
+.stats{
+
+display:flex;
+
+gap:20px;
+
+margin-bottom:35px;
+
+}
+
+.stat-card{
+animation:floatCard 5s ease-in-out infinite;
+
+flex:1;
+
+background:linear-gradient(180deg,#172033,#10151f);
+padding:20px;
+
+border-radius:24px;
+
+min-height:130px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+
+border:1px solid rgba(255,255,255,.08);
+
+text-align:center;
+
+transition:.3s;
+
+}
+
+.stat-card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 15px 30px rgba(0,0,0,.25);
+
+}
+
+.stat-card h2{
+
+font-size:30px;
+
+color:#60a5fa;
+
+margin-bottom:8px;
+
+}
+
+.metric{
+
+font-size:52px;
+
+font-weight:700;
+
+text-shadow:
+
+0 0 20px rgba(59,130,246,.35);
+
+}
+
+.stat-card p{
+
+color:#94a3b8;
+
+}
+
+.tabs{
+
+display:flex;
+
+justify-content:center;
+
+gap:12px;
+
+margin:30px 0;
+
+flex-wrap:wrap;
+
+}
+
+.tab-btn{
+
+width:auto;
+
+margin:0;
+
+padding:12px 22px;
+
+background:rgba(255,255,255,.03);
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:18px;
+
+color:#cbd5e1;
+
+font-size:15px;
+
+font-weight:500;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.tab-btn:hover{
+transform:
+translateY(-3px)
+scale(1.04);
+
+background:#1e293b;
+
+border-color:#3b82f6;
+
+}
+
+.tab-btn.active{
+
+background:linear-gradient(90deg,#1d4ed8,#2563eb);
+
+color:white;
+
+border:none;
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:20px;
+
+}
+
+.insight-grid{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:20px;
+
+margin-top:20px;
+
+}
+
+@media(max-width:900px){
+
+.insight-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+.steps-grid{
+
+grid-template-columns:repeat(5,1fr);
+
+}
+
+@media(max-width:900px){
+
+.steps-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:500px){
+
+.steps-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+.field{
+
+display:flex;
+flex-direction:column;
+
+}
+
+label{
+
+margin-bottom:8px;
+
+font-size:14px;
+
+color:#cbd5e1;
+
+}
+
+input,
+select{
+
+padding:15px;
+
+border:1px solid rgba(255,255,255,.05);
+
+border-radius:14px;
+
+background:#111827;
+
+color:white;
+
+font-size:15px;
+
+transition:.35s;
+
+}
+
+input:focus,
+select:focus{
+
+border:1px solid #fbbf24;
+
+box-shadow:
+0 0 20px rgba(251,191,36,.25);
+
+}
+
+button{
+
+margin-top:30px;
+
+width:100%;
+
+padding:18px;
+
+border:none;
+
+border-radius:18px;
+
+background:linear-gradient(
+90deg,
+#2563eb,
+#3b82f6,
+#60a5fa
+);
+
+background-size:250%;
+
+font-size:18px;
+
+font-weight:600;
+
+color:white;
+
+cursor:pointer;
+
+transition:.35s;
+
+box-shadow:
+0 10px 30px rgba(37,99,235,.35);
+
+}
+
+button:hover{
+
+background-position:right;
+
+transform:translateY(-3px);
+
+box-shadow:
+0 18px 40px rgba(37,99,235,.45);
+
+}
+
+button:disabled{
+
+opacity:.7;
+
+cursor:not-allowed;
+
+}
+
+#result{
+
+display:none;
+
+margin-top:40px;
+
+padding:30px;
+
+border-radius:18px;
+
+background:#090c15;
+
+border:1px solid rgba(251,191,36,.12);
+
+
+}
+
+.progress{
+
+width:100%;
+
+height:16px;
+
+background:#334155;
+
+border-radius:20px;
+
+overflow:hidden;
+
+margin:15px 0;
+
+}
+
+.progress-bar{
+
+height:100%;
+border-radius:20px;
+
+width:0;
+position:relative;
+overflow:hidden;
+
+transition:width 1.5s cubic-bezier(.22,1,.36,1);
+}
+
+.progress-bar::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-35%;
+
+    width:35%;
+    height:100%;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.8),
+        transparent
+    );
+
+    animation:scan 1.8s linear infinite;
+
+}
+@keyframes scan{
+
+0%{
+left:-35%;
+}
+
+100%{
+left:135%;
+}
+
+}
+
+.card{
+
+animation:cardAppear .7s ease;
+
+position:relative;
+
+overflow:hidden;
+
+background:linear-gradient(
+180deg,
+#172033,
+#121826
+);
+
+padding:22px;
+
+border-radius:22px;
+
+margin-top:20px;
+
+border:1px solid rgba(255,255,255,.08);
+
+transition:.35s;
+
+box-shadow:
+0 10px 35px rgba(0,0,0,.35);
+
+}
+
+.card::before{
+
+content:"";
+
+position:absolute;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:3px;
+
+background:linear-gradient(
+90deg,
+#3b82f6,
+#fbbf24
+);
+
+}
+
+.card:hover{
+
+transform:translateY(-8px) scale(1.03);
+
+border:1px solid rgba(96,165,250,.5);
+
+box-shadow:
+0 0 45px rgba(59,130,246,.25),
+0 20px 40px rgba(0,0,0,.45);
+
+}
+
+ul{
+
+margin-left:18px;
+
+line-height:1.8;
+
+}
+
+.risk-factor{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+margin-top:12px;
+
+padding:10px 12px;
+
+background:rgba(255,255,255,.03);
+
+border:1px solid rgba(255,255,255,.06);
+
+border-radius:12px;
+
+font-size:14px;
+
+color:#e2e8f0;
+
+}
+
+.risk-icon{
+
+font-size:16px;
+
+}
+
+.blob{
+
+animation:floatBlob 10s ease-in-out infinite;
+
+position:fixed;
+
+width:350px;
+height:350px;
+
+border-radius:50%;
+
+filter:blur(120px);
+
+opacity:.30;
+
+z-index:-1;
+
+}
+
+.blob1{
+
+background:#2563eb;
+
+top:-120px;
+left:-120px;
+
+}
+
+.blob2{
+
+background:#06b6d4;
+
+bottom:-120px;
+right:-120px;
+
+}
+
+@media(max-width:800px){
+
+.grid{
+
+grid-template-columns:1fr;
+
+}
+
+.container{
+
+padding:22px;
+
+width:100%;
+
+}
+
+}
+
+@keyframes fadeIn{
+
+from{
+
+opacity:0;
+transform:translateY(30px);
+
+}
+
+to{
+
+opacity:1;
+transform:translateY(0);
+
+}
+
+}
+@keyframes floatBlob{
+
+0%{
+transform:translate(0,0);
+}
+
+50%{
+transform:translate(30px,-20px);
+}
+
+100%{
+transform:translate(0,0);
+}
+
+}
+@keyframes cardAppear{
+
+from{
+
+opacity:0;
+
+transform:
+translateY(20px)
+scale(.96);
+
+}
+
+to{
+
+opacity:1;
+
+transform:
+translateY(0)
+scale(1);
+
+}
+
+}
+@keyframes floatCard{
+
+0%,100%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-6px);
+
+}
+
+}
+.scan-box{
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.scan-box::after{
+
+content:"";
+
+position:absolute;
+
+top:0;
+left:-120%;
+
+width:40%;
+height:100%;
+
+background:linear-gradient(
+90deg,
+transparent,
+rgba(96,165,250,.45),
+transparent
+);
+
+transform:skewX(-20deg);
+
+animation:scan2 1.5s linear infinite;
+
+}
+
+@keyframes scan2{
+
+100%{
+
+left:150%;
+
+}
+
+}
+.loading{
+
+animation:pulse 1s infinite;
+
+}
+
+@keyframes pulse{
+
+0%{
+
+transform:scale(1);
+
+}
+
+50%{
+
+transform:scale(1.02);
+
+box-shadow:
+0 0 30px rgba(59,130,246,.6);
+
+}
+
+100%{
+
+transform:scale(1);
+
+}
+
+}
+/* ================= HERO SHIELD ================= */
+
+.hero-shield{
+
+position:relative;
+
+width:280px;
+height:280px;
+
+margin:0 auto 30px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+}
+
+.circuit-field{
+
+position:absolute;
+
+width:280px;
+height:280px;
+
+top:50%;
+left:50%;
+
+transform:translate(-50%,-50%);
+
+pointer-events:none;
+
+z-index:0;
+
+}
+
+.circuit-field path{
+
+fill:none;
+
+stroke:#38bdf8;
+
+stroke-width:1.6;
+
+stroke-linecap:round;
+
+opacity:.55;
+
+filter:drop-shadow(0 0 3px rgba(56,189,248,.65));
+
+stroke-dasharray:7 11;
+
+animation:traceFlow 3.4s linear infinite;
+
+}
+
+.circuit-field path:nth-child(2n){
+animation-duration:4.2s;
+opacity:.4;
+}
+
+.circuit-field path:nth-child(3n){
+animation-direction:reverse;
+animation-duration:5s;
+}
+
+.circuit-field circle{
+
+fill:#fbbf24;
+
+animation:nodePulse 2.4s ease-in-out infinite;
+
+}
+
+.circuit-field circle:nth-child(odd){
+animation-delay:.6s;
+}
+
+@keyframes traceFlow{
+to{
+stroke-dashoffset:-180;
+}
+}
+
+@keyframes nodePulse{
+0%,100%{
+opacity:.45;
+filter:drop-shadow(0 0 2px #fbbf24);
+}
+50%{
+opacity:1;
+filter:drop-shadow(0 0 9px #fbbf24);
+}
+}
+
+.shield-core{
+    position:relative;
+    width:118px;
+    height:138px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    filter:
+        drop-shadow(0 0 14px rgba(251,191,36,.55))
+        drop-shadow(0 0 34px rgba(59,130,246,.35));
+
+    animation:
+        pulseShield 3s infinite ease-in-out,
+        floatShield 5s infinite ease-in-out;
+}
+
+.shield-svg{
+    width:100%;
+    height:100%;
+    overflow:visible;
+}
+
+.shield-svg .scan-line{
+    animation:shieldScan 2.6s ease-in-out infinite;
+}
+
+@keyframes shieldScan{
+    0%{transform:translateY(0);opacity:0;}
+    10%{opacity:1;}
+    90%{opacity:1;}
+    100%{transform:translateY(150px);opacity:0;}
+}
+
+.shield-ring{
+
+    position:absolute;
+
+    width:155px;
+    height:155px;
+
+    border-radius:50%;
+
+    background:
+        conic-gradient(
+            from 0deg,
+            transparent,
+            #fbbf24,
+            transparent,
+            #60a5fa,
+            transparent,
+            #fbbf24,
+            transparent
+        );
+
+    -webkit-mask:
+        radial-gradient(circle, transparent 62px, black 64px);
+
+    mask:
+        radial-gradient(circle, transparent 62px, black 64px);
+
+    animation:
+        spinRing 10s linear infinite;
+
+    filter:
+        drop-shadow(0 0 10px rgba(251,191,36,.5))
+        drop-shadow(0 0 25px rgba(59,130,246,.3));
+
+}
+
+/* ===== Animations ===== */
+
+@keyframes pulseShield{
+
+    0%,100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.08);
+    }
+
+}
+
+@keyframes floatShield{
+
+    0%,100%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-10px);
+    }
+
+}
+
+@keyframes spinRing{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="container">
+
+<div class="hero-shield">
+
+    <svg class="circuit-field" viewBox="0 0 300 300">
+
+        <path d="M150,150 L150,60 L110,60 L110,20" />
+        <path d="M150,150 L150,50 L190,50 L190,15" />
+        <path d="M150,150 L230,150 L230,90 L270,90" />
+        <path d="M150,150 L245,150 L245,190 L280,190" />
+        <path d="M150,150 L150,240 L190,240 L190,275" />
+        <path d="M150,150 L150,250 L115,250 L115,285" />
+        <path d="M150,150 L70,150 L70,100 L25,100" />
+        <path d="M150,150 L60,150 L60,195 L20,195" />
+        <path d="M150,150 L100,150 L100,80" />
+        <path d="M150,150 L200,150 L200,220" />
+
+        <circle cx="110" cy="20" r="3.5" />
+        <circle cx="190" cy="15" r="3.5" />
+        <circle cx="270" cy="90" r="3.5" />
+        <circle cx="280" cy="190" r="3.5" />
+        <circle cx="190" cy="275" r="3.5" />
+        <circle cx="115" cy="285" r="3.5" />
+        <circle cx="25" cy="100" r="3.5" />
+        <circle cx="20" cy="195" r="3.5" />
+        <circle cx="100" cy="80" r="3" />
+        <circle cx="200" cy="220" r="3" />
+
+    </svg>
+
+    <div class="shield-ring"></div>
+
+    <div class="shield-core">
+
+        <svg class="shield-svg" viewBox="0 0 120 140">
+
+            <defs>
+
+                <linearGradient id="shieldOutline" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fde68a"/>
+                    <stop offset="45%" stop-color="#fbbf24"/>
+                    <stop offset="100%" stop-color="#f59e0b"/>
+                </linearGradient>
+
+                <radialGradient id="shieldFill" cx="50%" cy="32%" r="80%">
+                    <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.85"/>
+                    <stop offset="100%" stop-color="#0b1220" stop-opacity="0.95"/>
+                </radialGradient>
+
+                <linearGradient id="scanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="transparent"/>
+                    <stop offset="50%" stop-color="#fbbf24"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                </linearGradient>
+
+                <clipPath id="shieldClip">
+                    <path d="M60 8 L102 24 L96 76 C93 104 77 123 60 132 C43 123 27 104 24 76 L18 24 Z"/>
+                </clipPath>
+
+                <filter id="shieldGlow" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur stdDeviation="4.5" result="blur"/>
+                    <feMerge>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+
+            </defs>
+
+            <!-- Outer glow pass -->
+
+            <path
+                d="M60 8 L102 24 L96 76 C93 104 77 123 60 132 C43 123 27 104 24 76 L18 24 Z"
+                fill="none"
+                stroke="#fbbf24"
+                stroke-width="7"
+                opacity="0.4"
+                filter="url(#shieldGlow)"
+            />
+
+            <!-- Shield body -->
+
+            <path
+                d="M60 8 L102 24 L96 76 C93 104 77 123 60 132 C43 123 27 104 24 76 L18 24 Z"
+                fill="url(#shieldFill)"
+                stroke="url(#shieldOutline)"
+                stroke-width="4"
+                stroke-linejoin="round"
+            />
+
+            <!-- Inner circuit traces, clipped to shield silhouette -->
+
+            <g clip-path="url(#shieldClip)" fill="none" stroke="#38bdf8" stroke-width="1.3" opacity="0.6">
+                <path d="M18 42 H48 V58 H80"/>
+                <path d="M102 52 H74 V84"/>
+                <path d="M28 92 H54 V72"/>
+                <path d="M60 12 V38"/>
+                <path d="M60 100 V120"/>
+                <path d="M40 30 V44"/>
+                <path d="M84 34 V50"/>
+                <circle cx="48" cy="58" r="2" fill="#fbbf24" stroke="none"/>
+                <circle cx="74" cy="84" r="2" fill="#fbbf24" stroke="none"/>
+                <circle cx="54" cy="72" r="2" fill="#fbbf24" stroke="none"/>
+                <circle cx="40" cy="30" r="1.6" fill="#fbbf24" stroke="none"/>
+                <circle cx="84" cy="34" r="1.6" fill="#fbbf24" stroke="none"/>
+            </g>
+
+            <!-- Inner highlight -->
+
+            <path
+                d="M60 18 L90 30 L86 72 C84 92 74 106 60 113 C46 106 36 92 34 72 L30 30 Z"
+                fill="none"
+                stroke="rgba(255,255,255,.18)"
+                stroke-width="1.5"
+            />
+
+            <!-- Lock emblem -->
+
+            <g transform="translate(60,72)">
+                <path d="M-9 -4 V-11 a9 9 0 0 1 18 0 V-4" fill="none" stroke="#fde68a" stroke-width="4" stroke-linecap="round"/>
+                <rect x="-13" y="-4" width="26" height="21" rx="4" fill="#fde68a"/>
+                <circle cx="0" cy="7" r="3" fill="#0b1220"/>
+                <rect x="-1.4" y="7" width="2.8" height="6" fill="#0b1220"/>
+            </g>
+
+            <!-- Animated scan line -->
+
+            <rect
+                class="scan-line"
+                x="18"
+                y="-30"
+                width="84"
+                height="12"
+                fill="url(#scanGradient)">
+            </rect>
+
+        </svg>
+
+    </div>
+
+
+</div>
+
+
+<h1 style="
+font-family:'Sora',sans-serif;
+font-size:60px;
+font-weight:800;
+letter-spacing:-1.5px;
+margin-top:20px;
+margin-bottom:12px;
+line-height:1.05;
+text-align:center;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:14px;
+flex-wrap:wrap;
+">
+
+<span>
+<span style="
+background:linear-gradient(135deg,#fde68a,#fbbf24 55%,#f59e0b);
+-webkit-background-clip:text;
+background-clip:text;
+color:transparent;
+">Fraud</span><span style="color:#ffffff;">Shield</span>
+</span>
+
+<span class="ai-text" style="
+font-size:0.42em;
+font-weight:700;
+letter-spacing:0.5px;
+padding:6px 14px;
+border-radius:10px;
+border:1.5px solid rgba(96,165,250,.5);
+background:rgba(96,165,250,.08);
+vertical-align:middle;
+">AI</span>
+
+</h1>
+
+
+<p style="
+text-align:center;
+font-size:24px;
+font-weight:600;
+margin-bottom:14px;
+color:white;
+">
+
+Enterprise Financial Fraud Detection Platform
+
+</p>
+
+
+<p class="subtitle">
+
+Detect suspicious financial transactions in real time using an
+<strong style="color:white;">XGBoost</strong>
+machine learning model trained on over
+
+<strong style="color:#fbbf24;">
+6.3 million
+</strong>
+
+PaySim transactions.
+
+</p>
+
+
+<div class="badges-row">
+
+<div class="badge">⚡ Real-Time AI</div>
+<div class="badge">🧠 XGBoost ML</div>
+<div class="badge">📊 PaySim Dataset</div>
+<div class="badge">🚀 FastAPI Backend</div>
+
+</div>
+
+
+
+<div class="tabs">
+
+<button class="tab-btn active" onclick="showTab('transaction', this)">
+🏠 Transaction
+</button>
+
+<button class="tab-btn" onclick="showTab('insights', this)">
+📊 Insights
+</button>
+
+<button class="tab-btn" onclick="showTab('about', this)">
+📖 About
+</button>
+
+<button class="tab-btn" onclick="showTab('developer', this)">
+👨‍💻 Developer
+</button>
+
+</div>
+
+<div id="transaction" class="tab-content" style="display:block;">
+
+<div class="stats">
+
+<div class="stat-card">
+<h2>6.3M+</h2>
+<p>Transactions</p>
+</div>
+
+<div class="stat-card">
+<h2>99%</h2>
+<p>Fraud Recall</p>
+</div>
+
+<div class="stat-card">
+<h2>0.9997</h2>
+<p>ROC-AUC</p>
+</div>
+
+</div>
+
+<div class="grid">
+
+<div class="field">
+
+<label>🔄 Transaction Type</label>
+
+<select id="type">
+
+<option>PAYMENT</option>
+<option>TRANSFER</option>
+<option>CASH_OUT</option>
+<option>DEBIT</option>
+<option>CASH_IN</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>💰 Transaction Amount</label>
+
+<input id="amount" type="number" placeholder="50,000">
+
+</div>
+
+<div class="field">
+
+<label>🏦 Sender Balance Before</label>
+
+<input id="oldbalanceOrg" type="number" placeholder="100,000">
+
+
+</div>
+
+<div class="field">
+
+<label>👤 Sender Balance After</label>
+
+<input id="newbalanceOrig" type="number" placeholder="50,000">
+
+</div>
+
+<div class="field">
+
+<label>🏦 Receiver Balance Before</label>
+
+<input id="oldbalanceDest" type="number" placeholder="0">
+
+</div>
+
+<div class="field">
+
+<label>👤 Receiver Balance After</label>
+
+<input id="newbalanceDest" type="number" placeholder="50,000">
+
+</div>
+
+</div>
+
+
+<div style="display:flex;gap:15px;margin-top:30px;">
+
+<button
+type="button"
+onclick="loadFraudSample()"
+style="background:#dc2626;">
+
+🚨 Fraud Sample
+
+</button>
+
+<button
+type="button"
+onclick="loadLegitSample()"
+style="background:#16a34a;">
+
+✅ Legit Sample
+
+</button>
+
+</div>
+
+<button onclick="checkFraud()">
+
+🛡 Analyze Transaction with AI
+
+</button>
+
+<div id="result"></div>
+
+</div>
+
+<div id="insights" class="tab-content" style="display:none;">
+
+    <div class="card">
+
+        <h2>📊 Model Insights</h2>
+
+        <br>
+
+        <div class="insight-grid">
+
+            <div class="card">
+
+                <h3>🧠 Algorithm</h3>
+
+                <h2 style="color:#60a5fa;">XGBoost</h2>
+
+                <p>Gradient Boosting Classifier</p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>📊 Dataset</h3>
+
+                <h2 style="color:#fbbf24;">6.3M+</h2>
+
+                <p>PaySim Transactions</p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>🎯 Precision</h3>
+
+                <h2 style="color:#22c55e;">99%</h2>
+
+                <p>Fraud Precision</p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>⚡ Recall</h3>
+
+                <h2 class="metric" style="color:#60a5fa;">99%</h2>
+
+                <p>Fraud Recall</p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>📈 ROC-AUC</h3>
+
+                <h2 style="color:#fbbf24;">0.9997</h2>
+
+                <p>Model Performance</p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>🔧 Features</h3>
+
+                <h2 style="color:#60a5fa;">11</h2>
+
+                <p>Engineered Features</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="about" class="tab-content" style="display:none;">
+
+    <div class="card">
+
+        <h2>📖 About FraudShield AI</h2>
+
+        <br>
+
+        <p>
+
+        FraudShield AI is an enterprise-inspired fraud detection platform built using Machine Learning and FastAPI.
+
+        </p>
+
+        <br>
+
+        <p>
+
+        It analyzes financial transactions in real time using an XGBoost model trained on over 6.3 million PaySim transactions.
+
+        </p>
+
+        <br>
+
+        <p>
+
+        The system predicts fraud probability, assigns a risk level, highlights important risk factors and generates a plain-language explanation automatically.
+
+        </p>
+
+        <br>
+
+        <a href="https://github.com/Aarya0706" target="_blank" style="
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding:12px 22px;
+        border-radius:14px;
+        background:rgba(255,255,255,.04);
+        border:1px solid rgba(255,255,255,.12);
+        color:#e2e8f0;
+        text-decoration:none;
+        font-weight:500;
+        font-size:15px;
+        transition:.3s;
+        ">
+        🔗 View source on GitHub
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h2>⚙️ How It Works</h2>
+
+        <br>
+
+        <p style="color:#94a3b8;margin-bottom:10px;">
+        Every transaction moves through the same five-stage pipeline, end to end in under 100ms:
+        </p>
+
+        <div class="insight-grid steps-grid">
+
+            <div class="card" style="margin-top:0;">
+                <h3 style="color:#60a5fa;">1</h3>
+                <p style="margin-top:6px;">Transaction submitted via API</p>
+            </div>
+
+            <div class="card" style="margin-top:0;">
+                <h3 style="color:#60a5fa;">2</h3>
+                <p style="margin-top:6px;">11 features engineered (log-scaled balances, drain &amp; anomaly flags, ratios)</p>
+            </div>
+
+            <div class="card" style="margin-top:0;">
+                <h3 style="color:#60a5fa;">3</h3>
+                <p style="margin-top:6px;">XGBoost scores fraud probability</p>
+            </div>
+
+            <div class="card" style="margin-top:0;">
+                <h3 style="color:#fbbf24;">4</h3>
+                <p style="margin-top:6px;">Risk level assigned (Low → Critical)</p>
+            </div>
+
+            <div class="card" style="margin-top:0;">
+                <h3 style="color:#fbbf24;">5</h3>
+                <p style="margin-top:6px;">A rule-based engine writes a plain-English summary</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>🚧 Limitations &amp; Roadmap</h2>
+
+        <br>
+
+        <p>
+
+        The current model is trained on the synthetic PaySim dataset, which mimics real transaction patterns but
+        isn't real financial data — accuracy numbers here reflect performance on synthetic fraud, not a
+        production population.
+
+        </p>
+
+        <br>
+
+        <p>Planned next steps:</p>
+
+        <ul style="margin-top:10px;color:#cbd5e1;">
+            <li>Validate against a real-world fraud dataset (e.g. IEEE-CIS)</li>
+            <li>Re-check the decision threshold if the production class balance shifts — a 0.5 cutoff currently outperforms the F1-optimal precision-recall threshold on this dataset, but that can change with different data</li>
+            <li>Add authentication and rate limiting before any real deployment</li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="developer" class="tab-content" style="display:none;">
+
+    <div class="card">
+
+        <h2>👨‍💻 Developer</h2>
+
+        <br>
+
+        <div style="
+        display:flex;
+        align-items:center;
+        gap:20px;
+        flex-wrap:wrap;
+        ">
+
+            <img src="avatar.jpg" alt="Aarya Shirsath" style="
+            width:120px;
+            height:120px;
+            border-radius:50%;
+            object-fit:cover;
+            border:3px solid transparent;
+            background:
+                linear-gradient(#0c0f1a,#0c0f1a) padding-box,
+                linear-gradient(135deg,#1d4ed8,#fbbf24) border-box;
+            box-shadow:
+                0 12px 30px rgba(59,130,246,.25),
+                0 0 20px rgba(212,175,55,.15);
+            ">
+
+            <div>
+
+                <h2 style="margin:0;">
+                    <span style="color:#fbbf24;font-size:0.7em;vertical-align:2px;">♥</span>
+                    Aarya Shirsath
+                </h2>
+
+                <p style="color:#94a3b8;margin-top:8px;">
+                    B.Tech Computer Science Engineering
+                </p>
+
+                <p style="color:#94a3b8;">
+                    AI • Machine Learning • Full Stack Development
+                </p>
+
+            </div>
+
+        </div>
+
+        <hr style="
+        margin:25px 0;
+        border:none;
+        height:1px;
+        background:#293042;
+        ">
+
+        <div class="grid">
+
+            <div class="card">
+
+                <h3>💻 Tech Stack</h3>
+
+                <ul>
+                    <li>Python</li>
+                    <li>FastAPI</li>
+                    <li>XGBoost</li>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                </ul>
+
+            </div>
+
+            <div class="card">
+
+                <h3>🎯 Project Goal</h3>
+
+                <p style="line-height:1.8;">
+
+                    FraudShield AI is an intelligent fraud detection platform
+                    that analyzes financial transactions in real time using
+                    Machine Learning to identify suspicious activities and
+                    improve financial security.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card" style="margin-top:25px;">
+
+            <h3>🚀 Highlights</h3>
+
+            <br>
+
+            <p>✔ Built on the PaySim financial transaction dataset (6.3M+ records)</p>
+
+            <p>✔ Real-time fraud prediction using XGBoost</p>
+
+            <p>✔ Automated, rule-based transaction explanations</p>
+
+            <p>✔ REST API powered by FastAPI</p>
+
+            <p>✔ Modern responsive frontend using HTML, CSS & JavaScript</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer style="
+margin-top:35px;
+padding-top:20px;
+border-top:1px solid rgba(255,255,255,.08);
+text-align:center;
+font-size:13px;
+line-height:1.8;
+color:#94a3b8;
+">
+
+<div>
+🛡 <strong>FraudShield AI</strong> • Real-Time Financial Fraud Detection
+</div>
+
+<div>
+Powered by <strong>XGBoost</strong> • <strong>FastAPI</strong> • <strong>Machine Learning</strong>
+</div>
+
+<div style="margin-top:10px;color:#60a5fa;">
+Designed & Developed by
+<strong style="color:#fbbf24;">
+Aarya Shirsath
+</strong>
+</div>
+
+</footer>
+
+</div>
+
+<script>
+function loadFraudSample(){
+
+document.getElementById("type").value="TRANSFER";
+
+document.getElementById("amount").value=800000;
+
+document.getElementById("oldbalanceOrg").value=900000;
+
+document.getElementById("newbalanceOrig").value=0;
+
+document.getElementById("oldbalanceDest").value=0;
+
+document.getElementById("newbalanceDest").value=800000;
+
+}
+
+function loadLegitSample(){
+
+document.getElementById("type").value="PAYMENT";
+
+document.getElementById("amount").value=250;
+
+document.getElementById("oldbalanceOrg").value=5000;
+
+document.getElementById("newbalanceOrig").value=4750;
+
+document.getElementById("oldbalanceDest").value=2000;
+
+document.getElementById("newbalanceDest").value=2250;
+
+} 
+
+async function checkFraud() {
+
+    const resultDiv = document.getElementById("result");
+    const btn=document.querySelector("button[onclick='checkFraud()']");
+
+    if (
+        !document.getElementById("amount").value ||
+        !document.getElementById("oldbalanceOrg").value ||
+        !document.getElementById("newbalanceOrig").value ||
+        !document.getElementById("oldbalanceDest").value ||
+        !document.getElementById("newbalanceDest").value
+    ) {
+        alert("Please fill all fields.");
+        return;
+    }
+
+    btn.disabled=true;
+    btn.classList.add("loading");
+
+    btn.innerHTML="🤖 AI analyzing transaction...";
+
+    resultDiv.style.display = "block";
+
+    resultDiv.innerHTML = `
+
+    <div class="card scan-box">
+
+    <h2 style="
+    text-align:center;
+    color:#60a5fa;
+    ">
+
+    🧠 FraudShield AI is analyzing this transaction
+
+    </h2>
+
+    <p style="
+    text-align:center;
+    margin-top:15px;
+    color:#94a3b8;
+    ">
+
+    Running XGBoost model<br>
+    Extracting transaction features<br>
+    Calculating fraud probability...
+
+    </p>
+
+    </div>
+
+    `;
+    const data = {
+        type: document.getElementById("type").value,
+        amount: Number(document.getElementById("amount").value),
+        oldbalanceOrg: Number(document.getElementById("oldbalanceOrg").value),
+        newbalanceOrig: Number(document.getElementById("newbalanceOrig").value),
+        oldbalanceDest: Number(document.getElementById("oldbalanceDest").value),
+        newbalanceDest: Number(document.getElementById("newbalanceDest").value)
+    };
+
+    try {
+
+        const response = await fetch("http://localhost:8000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || "Prediction failed.");
+        }
+
+        const probability = (result.fraud_probability * 100).toFixed(2);
+
+        let color = "#22c55e";
+
+        if (result.risk_level === "MEDIUM") color = "#facc15";
+        else if (result.risk_level === "HIGH") color = "#fb923c";
+        else if (result.risk_level === "CRITICAL") color = "#ef4444";
+
+        resultDiv.innerHTML = `
+
+        <h2 style="text-align:center;color:${color};margin-bottom:20px;">
+            ${result.is_fraud ? "🚨 Fraud Detected" : "✅ LEGITIMATE TRANSACTION"}
+        </h2>
+
+        <div style="text-align:center;margin-bottom:20px;">
+            <span class="badge" style="background:${color};color:#0a0f1c;font-weight:700;">
+                ${result.risk_level}
+            </span>
+        </div>
+
+        <h3>Fraud Probability</h3>
+
+        <div class="progress">
+            <div
+                id="fraudBar"
+                class="progress-bar"
+                style="
+                width:0%;
+                background:${color};
+                ">
+            </div>
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+
+                <h3>📊 Prediction Details</h3>
+
+                <br>
+
+                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+                    <span style="color:#94a3b8;">Fraud Probability</span>
+                    <strong style="color:${color};font-size:20px;">
+                        ${probability}%
+                    </strong>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+                    <span style="color:#94a3b8;">Confidence</span>
+                    <strong>${result.confidence ?? "—"}</strong>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+                    <span style="color:#94a3b8;">Risk Level</span>
+                    <strong style="color:${color};">
+                    ${result.risk_level}
+                    </strong>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+                    <span style="color:#94a3b8;">Decision Threshold</span>
+                    <strong>${result.threshold ?? "0.5"}</strong>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="color:#94a3b8;">Detection Engine</span>
+                    <strong>XGBoost v1.0</strong>
+                </div>
+
+                </div>
+
+            <div class="card">
+
+                <h3>🚨 Detected Risk Indicators</h3>
+
+                ${
+                (result.top_risk_factors || [])
+                .map(item => `
+                    <div class="risk-factor">
+
+                        <span class="risk-icon">⚠️</span>
+
+                        <span>${item}</span>
+
+                    </div>
+                `)
+                .join("") || `<p style="color:#94a3b8;margin-top:12px;">No specific risk factors flagged.</p>`
+                }
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>🤖 AI Investigation Summary</h3>
+
+            <p style="margin-top:12px;line-height:1.8;">
+
+                ${result.summary}
+
+            </p>
+
+        </div>
+
+        `;
+        setTimeout(() => {
+
+            const bar = document.getElementById("fraudBar");
+
+            if(bar){
+                bar.style.transition = "width 1.6s cubic-bezier(.22,1,.36,1)";
+                bar.style.width = probability + "%";
+            }
+
+        },150);
+
+    btn.disabled=false;
+
+    btn.classList.remove("loading");
+
+    btn.innerHTML="🛡 Analyze Transaction with AI";
+
+    }
+
+    catch(error){
+         
+        btn.disabled=false;
+
+        btn.classList.remove("loading");
+
+
+        btn.innerHTML="🛡 Analyze Transaction with AI";
+
+        resultDiv.innerHTML = `
+
+        <h2 style="color:#ef4444;text-align:center;">
+            ❌ Unable to Analyze Transaction
+        </h2>
+
+        <p style="margin-top:15px;text-align:center;">
+            ${error.message}
+        </p>
+
+        <p style="text-align:center;color:#94a3b8;">
+            Make sure your FastAPI server is running.
+        </p>
+
+        <pre style="
+        margin-top:15px;
+        background:#111827;
+        padding:12px;
+        border-radius:10px;
+        color:#60a5fa;
+        overflow:auto;
+        ">
+uvicorn api.app:app --reload
+        </pre>
+
+        `;
+
+    }
+
+}
+
+function showTab(tabId, button){
+
+    // Hide all tab contents
+    document.querySelectorAll(".tab-content").forEach(tab => {
+        tab.style.display = "none";
+    });
+
+    // Remove active class from all buttons
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    // Show selected tab
+    document.getElementById(tabId).style.display = "block";
+
+    // Highlight selected button
+    button.classList.add("active");
+
+}
+
+</script>
+
+</body>
+
+</html>
