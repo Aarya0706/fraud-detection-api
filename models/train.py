@@ -20,7 +20,7 @@ from sklearn.metrics import (
 
 from imblearn.over_sampling import SMOTE
 
-from models.features import engineer_features, FEATURE_COLS
+from models.features import engineer_features, add_velocity_features, FEATURE_COLS
 
 SEED = 42
 
@@ -36,6 +36,14 @@ MODEL_PATH = os.path.join(MODEL_DIR, "xgb_fraud.json")
 SCALER_PATH = os.path.join(MODEL_DIR, "scaler.pkl")
 FEATURES_PATH = os.path.join(MODEL_DIR, "feature_names.pkl")
 
+# Kaggle's own PaySim page warns that balance columns can carry simulator
+# artifacts specifically on fraud rows (fraud transactions get cancelled
+# mid-simulation), so even the pre-transaction oldbalanceOrg/oldbalanceDest
+# could end up leaking signal, not just the post-transaction ones we already
+# excluded. These constants drive a post-training sanity check for that.
+LEAKAGE_WATCH_FEATURES = {"log_oldbalanceOrg", "log_oldbalanceDest"}
+DOMINANCE_THRESHOLD = 0.40  # one feature owning >=40% of importance is suspicious
+
 
 def load_data():
     print("Loading PaySim dataset...")
@@ -43,15 +51,18 @@ def load_data():
     df = pd.read_csv(
         DATA_PATH,
         usecols=[
+            "step",
             "type",
             "amount",
+            "nameOrig",
             "oldbalanceOrg",
-            "newbalanceOrig",
+            "nameDest",
             "oldbalanceDest",
-            "newbalanceDest",
             "isFraud",
         ],
     )
+    # newbalanceOrig / newbalanceDest are intentionally NOT loaded -- see
+    # the note in models/features.py on why they leak the label in PaySim.
 
     print(f"Loaded {len(df):,} transactions")
     print(f"Fraud Rate: {df['isFraud'].mean()*100:.4f}%")
@@ -60,6 +71,9 @@ def load_data():
 
 def train():
     df = load_data()
+
+    print("Deriving velocity features (recency_hours, txn_count_24h, is_dest_new)...")
+    df = add_velocity_features(df)
 
     print("Engineering features...")
     df = engineer_features(df)
@@ -172,6 +186,53 @@ def save_feature_importance(model):
 
     print("\nTop Features")
     print(importance.head(10))
+
+    _check_for_leakage(importance)
+
+
+def _check_for_leakage(importance: pd.DataFrame):
+    """
+    Heuristic, not a guarantee: flags when a single feature dominates
+    importance, since that's a common symptom of label leakage (it's
+    exactly how the old newbalanceOrig leak would have looked). Extra
+    attention on the balance columns per Kaggle's own note about the
+    dataset -- see LEAKAGE_WATCH_FEATURES above.
+    """
+    total = importance["Importance"].sum()
+    if total <= 0:
+        return
+
+    top_feature = importance.iloc[0]["Feature"]
+    top_share = importance.iloc[0]["Importance"] / total
+
+    print("\n==============================")
+    print("Leakage Sanity Check")
+    print("==============================")
+
+    if top_share >= DOMINANCE_THRESHOLD:
+        note = (
+            " (a balance column -- see the leakage note in models/features.py)"
+            if top_feature in LEAKAGE_WATCH_FEATURES else ""
+        )
+        print(
+            f"WARNING: '{top_feature}' alone accounts for {top_share:.0%} of "
+            f"total feature importance{note}. A single feature dominating "
+            f"this much is a common symptom of leakage. Before trusting this "
+            f"model, inspect that feature's distribution split by isFraud "
+            f"(e.g. df.groupby('isFraud')[<col>].describe())."
+        )
+    else:
+        present = [f for f in LEAKAGE_WATCH_FEATURES if f in importance["Feature"].values]
+        watched_share = (
+            importance.set_index("Feature").loc[present, "Importance"].sum() / total
+            if present else 0.0
+        )
+        print(
+            f"No single feature dominates (top: '{top_feature}' at "
+            f"{top_share:.0%}). Balance-column features account for "
+            f"{watched_share:.0%} of total importance combined -- within a "
+            f"normal range."
+        )
 
 
 if __name__ == "__main__":

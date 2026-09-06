@@ -113,7 +113,6 @@ def predict_fraud(transaction: dict) -> dict:
 
     amount = txn_dict.get("amount", 0)
     old_sender = txn_dict.get("oldbalanceOrg", 0)
-    new_sender = txn_dict.get("newbalanceOrig", 0)
     old_receiver = txn_dict.get("oldbalanceDest", 0)
     txn_type = txn_dict.get("type", "")
 
@@ -123,11 +122,14 @@ def predict_fraud(transaction: dict) -> dict:
     if txn_type in ["TRANSFER", "CASH_OUT"]:
         top_risk_factors.append(f"High-risk transaction type ({txn_type})")
 
-    if old_sender > 0 and new_sender == 0:
-        top_risk_factors.append("Sender account fully drained")
+    if old_sender > 0 and (old_sender - amount) <= 0:
+        top_risk_factors.append("Transaction would fully drain sender account")
 
     if old_receiver == 0:
         top_risk_factors.append("Destination account has zero previous balance")
+
+    if txn_dict.get("txn_count_24h", 0) >= 10:
+        top_risk_factors.append("Unusually high transaction velocity (24h)")
 
     if not top_risk_factors:
         top_risk_factors.append("No major fraud indicators detected")

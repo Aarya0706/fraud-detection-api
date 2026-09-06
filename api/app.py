@@ -30,13 +30,15 @@ from models.main import predict_fraud
 # ─────────────────────────────────────────────
 
 class Transaction(BaseModel):
+    # NOTE: no newbalanceOrig / newbalanceDest here on purpose -- those are
+    # POST-transaction balances that don't exist yet at authorization time,
+    # and including them let the old model leak the label instead of
+    # learning real fraud signal. Only pre-transaction fields below.
     type:            str   = Field(..., example="TRANSFER",
                                    description="PAYMENT | TRANSFER | CASH_OUT | DEBIT | CASH_IN")
     amount:          float = Field(..., gt=0, example=9823.50)
     oldbalanceOrg:   float = Field(..., ge=0, example=10000.0)
-    newbalanceOrig:  float = Field(..., ge=0, example=176.50)
     oldbalanceDest:  float = Field(..., ge=0, example=0.0)
-    newbalanceDest:  float = Field(..., ge=0, example=9823.50)
     recency_hours:   float = Field(24.0, ge=0, example=1.5,
                                    description="Hours since sender's last transaction")
     txn_count_24h:   int   = Field(1,    ge=0, example=8,
