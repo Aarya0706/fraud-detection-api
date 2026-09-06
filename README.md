@@ -12,7 +12,7 @@ Detect suspicious financial transactions in real time using an **XGBoost-powered
 <img src="https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
 <img src="https://img.shields.io/badge/XGBoost-ML-AA4400?style=for-the-badge"/>
 <img src="https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel"/>
-<img src="https://img.shields.io/badge/Backend-Railway-purple?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge"/>
 <img src="https://img.shields.io/badge/ROC--AUC-0.9997-success?style=for-the-badge"/>
 <img src="https://img.shields.io/badge/Dataset-6.3M%20Transactions-orange?style=for-the-badge"/>
 
@@ -48,8 +48,8 @@ Detect suspicious financial transactions in real time using an **XGBoost-powered
 | Service | Link |
 |---------|------|
 | 🚀 Frontend | https://fraud-detection-api-eta.vercel.app |
-| ⚙ Backend API | https://fraud-detection-api-production-f9a6.up.railway.app |
-| 📚 API Documentation | https://fraud-detection-api-production-f9a6.up.railway.app/docs |
+| ⚙ Backend API | https://fraud-detection-api-w9hz.onrender.com |
+| 📚 API Documentation | https://fraud-detection-api-w9hz.onrender.com/docs |
 
 ---
 
@@ -191,7 +191,7 @@ Vercel Frontend
 fetch("/predict")
      │
      ▼
-Railway FastAPI
+Render FastAPI
      │
      ▼
 XGBoost Model
@@ -323,7 +323,7 @@ The enterprise dashboard displays:
 - ✔ Precision: 99.24%
 - ✔ Recall: 99%
 - ✔ Sub-100ms Inference
-- ✔ Vercel + Railway Deployment
+- ✔ Vercel + Render Deployment
 
 ---
 
@@ -339,7 +339,7 @@ XGBoost • Scikit-Learn • Pandas • NumPy
 HTML5 • CSS3 • JavaScript
 
 **Deployment**
-Vercel • Railway
+Vercel • Render
 
 | Category | Technology |
 |-----------|------------|
@@ -349,7 +349,7 @@ Vercel • Railway
 | Data Processing | Pandas, NumPy |
 | Utilities | Scikit-Learn, Joblib |
 | Validation | Pydantic |
-| Deployment | Vercel + Railway |
+| Deployment | Vercel + Render |
 | Dataset | PaySim |
 
 ---
@@ -480,7 +480,7 @@ frontend/index.html
 - [x] Real-time fraud prediction
 - [x] FastAPI backend
 - [x] Vercel deployment
-- [x] Railway deployment
+- [x] Render deployment
 - [x] Interactive dashboard
 - [ ] SHAP explainability
 - [ ] Docker support
