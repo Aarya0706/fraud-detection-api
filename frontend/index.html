@@ -439,7 +439,7 @@ cursor:not-allowed;
 
 #result{
 
-display:none;
+display:block;
 
 margin-top:40px;
 
@@ -1263,6 +1263,242 @@ filter:drop-shadow(0 0 9px #fbbf24);
     margin-bottom:2px;
 }
 
+/* ================= MODEL STATUS PANEL ================= */
+
+.model-status-panel{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:22px;
+    padding:14px 22px;
+    margin-bottom:26px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:16px;
+    font-size:13px;
+}
+
+.ms-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#e2e8f0;
+}
+
+.ms-label{
+    color:#5b6b89;
+}
+
+.ms-value{
+    font-weight:600;
+}
+
+.ms-value.mono{
+    font-family:monospace;
+    color:#60a5fa;
+    font-size:12px;
+}
+
+.ms-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#94a3b8;
+    flex-shrink:0;
+    box-shadow:0 0 6px rgba(148,163,184,.6);
+}
+
+.ms-dot.online{
+    background:#22c55e;
+    box-shadow:0 0 8px rgba(34,197,94,.8);
+}
+
+.ms-dot.offline{
+    background:#ef4444;
+    box-shadow:0 0 8px rgba(239,68,68,.8);
+}
+
+/* ================= PRESETS ================= */
+
+.preset-row{
+    margin-top:6px;
+    margin-bottom:22px;
+}
+
+.preset-buttons{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+@media(max-width:700px){
+    .preset-buttons{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+.preset-btn{
+    margin-top:0;
+    padding:13px 10px;
+    font-size:13.5px;
+    font-weight:500;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.09);
+    box-shadow:none;
+}
+
+.preset-btn:hover{
+    background:#1e293b;
+    border-color:#3b82f6;
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,.25);
+}
+
+/* ================= RESULT STATES ================= */
+
+.empty-state{
+    text-align:center;
+    padding:20px 10px;
+}
+
+.empty-state-icon{
+    font-size:38px;
+    opacity:.5;
+    margin-bottom:10px;
+}
+
+.empty-state p{
+    color:#94a3b8;
+    max-width:440px;
+    margin:8px auto 0;
+    line-height:1.7;
+}
+
+.error-state{
+    text-align:center;
+    padding:10px;
+}
+
+.error-state h3{
+    color:#ef4444;
+}
+
+.error-state p{
+    color:#94a3b8;
+    margin-top:10px;
+    line-height:1.7;
+}
+
+.error-state .retry-btn{
+    margin-top:20px;
+    width:auto;
+    padding:12px 26px;
+    display:inline-block;
+}
+
+/* ================= STAGED LOADING ================= */
+
+.stage-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    max-width:360px;
+    margin:22px auto 4px;
+}
+
+.stage-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#5b6b89;
+    font-size:14px;
+    transition:color .3s ease;
+}
+
+.stage-item.active{
+    color:#e2e8f0;
+}
+
+.stage-item.done{
+    color:#60a5fa;
+}
+
+.stage-icon{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.15);
+    flex-shrink:0;
+    position:relative;
+}
+
+.stage-item.active .stage-icon{
+    border-color:#60a5fa;
+    animation:stagePulse 1s ease-in-out infinite;
+}
+
+.stage-item.done .stage-icon{
+    border-color:#60a5fa;
+    background:#60a5fa;
+}
+
+.stage-item.done .stage-icon::after{
+    content:"✓";
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    color:#0a0f1c;
+}
+
+@keyframes stagePulse{
+    0%,100%{ box-shadow:0 0 0 0 rgba(96,165,250,.5); }
+    50%{ box-shadow:0 0 0 6px rgba(96,165,250,0); }
+}
+
+@media(prefers-reduced-motion:reduce){
+    .stage-item.active .stage-icon{
+        animation:none;
+    }
+}
+
+/* ================= TRANSACTION SIGNAL PANEL ================= */
+
+.signal-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-top:10px;
+}
+
+@media(max-width:700px){
+    .signal-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+.signal-item{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:12px;
+    padding:12px 14px;
+}
+
+.signal-item .signal-label{
+    display:block;
+    font-size:11.5px;
+    color:#5b6b89;
+    margin-bottom:4px;
+}
+
+.signal-item .signal-value{
+    font-size:14.5px;
+    font-weight:600;
+    color:#e2e8f0;
+}
+
 </style>
 
 </head>
@@ -1489,6 +1725,7 @@ PaySim transactions.
 <div class="badge">🧠 XGBoost ML</div>
 <div class="badge">📊 PaySim Dataset</div>
 <div class="badge">🚀 FastAPI Backend</div>
+<div class="badge" id="apiStatusBadge">⏳ Checking API…</div>
 
 </div>
 
@@ -1532,6 +1769,21 @@ PaySim transactions.
 <h2>0.9997</h2>
 <p>ROC-AUC</p>
 </div>
+
+</div>
+
+<div class="model-status-panel" id="modelStatusPanel">
+
+    <div class="ms-item">
+        <span class="ms-dot" id="msDot"></span>
+        <span id="msStatusText">Checking model status…</span>
+    </div>
+
+    <div class="ms-item"><span class="ms-label">Classifier</span><span class="ms-value">XGBoost</span></div>
+    <div class="ms-item"><span class="ms-label">Features</span><span class="ms-value" id="msFeatures">—</span></div>
+    <div class="ms-item"><span class="ms-label">Model version</span><span class="ms-value mono" id="msVersion">—</span></div>
+    <div class="ms-item"><span class="ms-label">Threshold</span><span class="ms-value" id="msThreshold">—</span></div>
+    <div class="ms-item"><span class="ms-label">Last inference</span><span class="ms-value" id="msInference">—</span></div>
 
 </div>
 
@@ -1627,25 +1879,29 @@ Account &amp; behavior signals
 
 </div>
 
-<div style="display:flex;gap:15px;margin-top:10px;">
+<div class="preset-row">
 
-<button
-type="button"
-onclick="loadFraudSample()"
-style="background:#dc2626;">
+<div class="group-heading" style="border-bottom:none;padding-bottom:0;margin-bottom:10px;">Quick test scenarios</div>
 
-🚨 Load suspicious sample
+<div class="preset-buttons">
 
+<button type="button" class="preset-btn" onclick="loadPreset('normal')">
+🟢 Normal Payment
 </button>
 
-<button
-type="button"
-onclick="loadLegitSample()"
-style="background:#16a34a;">
-
-✅ Load legitimate sample
-
+<button type="button" class="preset-btn" onclick="loadPreset('suspicious')">
+🟡 Suspicious Transfer
 </button>
+
+<button type="button" class="preset-btn" onclick="loadPreset('drain')">
+🟠 Account Drain
+</button>
+
+<button type="button" class="preset-btn" onclick="loadPreset('velocity')">
+🔴 High Velocity
+</button>
+
+</div>
 
 </div>
 
@@ -1657,7 +1913,13 @@ style="background:#16a34a;">
 
 </div>
 
-<div id="result"></div>
+<div id="result">
+    <div class="card empty-state">
+        <div class="empty-state-icon">🛡</div>
+        <h3>No analysis yet</h3>
+        <p>Fill in the transaction above, or load a quick scenario, to see a live risk analysis with model explainability.</p>
+    </div>
+</div>
 
 </div>
 
@@ -1996,41 +2258,106 @@ Aarya Shirsath
 </div>
 
 <script>
-function loadFraudSample(){
 
-document.getElementById("type").value="TRANSFER";
+const API_BASE = "https://fraud-detection-api-w9hz.onrender.com";
 
-document.getElementById("amount").value=800000;
+const PRESETS = {
+    normal:     { type:"PAYMENT",  amount:250,    oldbalanceOrg:5000,   oldbalanceDest:2000, recency_hours:18,  txn_count_24h:1,  is_dest_new:0 },
+    suspicious: { type:"TRANSFER", amount:45000,  oldbalanceOrg:60000,  oldbalanceDest:500,  recency_hours:2,   txn_count_24h:3,  is_dest_new:1 },
+    drain:      { type:"CASH_OUT", amount:900000, oldbalanceOrg:900000, oldbalanceDest:0,    recency_hours:0.3, txn_count_24h:14, is_dest_new:1 },
+    velocity:   { type:"TRANSFER", amount:15000,  oldbalanceOrg:200000, oldbalanceDest:50000,recency_hours:0.1, txn_count_24h:22, is_dest_new:0 }
+};
 
-document.getElementById("oldbalanceOrg").value=900000;
-
-document.getElementById("oldbalanceDest").value=0;
-
-document.getElementById("recency_hours").value=0.3;
-
-document.getElementById("txn_count_24h").value=14;
-
-document.getElementById("is_dest_new").value="1";
-
+function loadPreset(name){
+    const p = PRESETS[name];
+    if(!p) return;
+    document.getElementById("type").value = p.type;
+    document.getElementById("amount").value = p.amount;
+    document.getElementById("oldbalanceOrg").value = p.oldbalanceOrg;
+    document.getElementById("oldbalanceDest").value = p.oldbalanceDest;
+    document.getElementById("recency_hours").value = p.recency_hours;
+    document.getElementById("txn_count_24h").value = p.txn_count_24h;
+    document.getElementById("is_dest_new").value = String(p.is_dest_new);
 }
 
-function loadLegitSample(){
+// ================= MODEL STATUS PANEL =================
+// Purely informational — reads GET /health and GET /model/info once on
+// load. Never blocks the analyzer; if these calls fail (e.g. Render is
+// cold, or offline) the panel just shows an "unreachable" state.
 
-document.getElementById("type").value="PAYMENT";
+async function fetchModelStatus(){
+    const dot = document.getElementById("msDot");
+    const statusText = document.getElementById("msStatusText");
+    const apiBadge = document.getElementById("apiStatusBadge");
 
-document.getElementById("amount").value=250;
+    try {
+        const [healthRes, infoRes] = await Promise.all([
+            fetch(`${API_BASE}/health`),
+            fetch(`${API_BASE}/model/info`)
+        ]);
 
-document.getElementById("oldbalanceOrg").value=5000;
+        if (!healthRes.ok || !infoRes.ok) throw new Error("bad status");
 
-document.getElementById("oldbalanceDest").value=2000;
+        const info = await infoRes.json();
 
-document.getElementById("recency_hours").value=18;
+        dot.classList.add("online");
+        statusText.textContent = "Model active";
+        apiBadge.textContent = "🟢 API online";
 
-document.getElementById("txn_count_24h").value=1;
+        document.getElementById("msFeatures").textContent = info.features ?? "—";
+        document.getElementById("msVersion").textContent = info.model_version ? info.model_version.slice(0,12) : "—";
 
-document.getElementById("is_dest_new").value="0";
+        if (info.metrics && info.metrics.threshold != null) {
+            document.getElementById("msThreshold").textContent = `${(info.metrics.threshold * 100).toFixed(0)}%`;
+        }
 
-} 
+    } catch (err) {
+        dot.classList.add("offline");
+        statusText.textContent = "Model unreachable (cold start or offline)";
+        apiBadge.textContent = "🟡 API waking up…";
+    }
+}
+
+fetchModelStatus();
+
+// ================= STAGED LOADING =================
+// Cosmetic only — represents the real pipeline shape (validate -> engineer
+// features -> run model -> explain) but is not tied to actual backend
+// timings, since the API doesn't report per-stage progress.
+
+const ANALYSIS_STAGES = [
+    "Validating input",
+    "Engineering features",
+    "Running XGBoost model",
+    "Generating risk explanation"
+];
+
+function renderStages(activeIndex){
+    return `
+    <div class="card">
+        <h3 style="text-align:center;color:#60a5fa;">🧠 FraudShield AI is analyzing this transaction</h3>
+        <div class="stage-list">
+            ${ANALYSIS_STAGES.map((label, i) => {
+                const state = i < activeIndex ? "done" : (i === activeIndex ? "active" : "");
+                return `
+                <div class="stage-item ${state}">
+                    <span class="stage-icon"></span>
+                    <span>${label}</span>
+                </div>`;
+            }).join("")}
+        </div>
+    </div>`;
+}
+
+function startStageAnimation(resultDiv){
+    let index = 0;
+    resultDiv.innerHTML = renderStages(index);
+    const interval = setInterval(() => {
+        index = (index + 1) % (ANALYSIS_STAGES.length + 1);
+        resultDiv.innerHTML = renderStages(index);
+    }, 700);
+    return interval;
+}
 
 async function checkFraud() {
 
@@ -2051,36 +2378,8 @@ async function checkFraud() {
 
     btn.innerHTML="🤖 AI analyzing transaction...";
 
-    resultDiv.style.display = "block";
+    const stageInterval = startStageAnimation(resultDiv);
 
-    resultDiv.innerHTML = `
-
-    <div class="card scan-box">
-
-    <h2 style="
-    text-align:center;
-    color:#60a5fa;
-    ">
-
-    🧠 FraudShield AI is analyzing this transaction
-
-    </h2>
-
-    <p style="
-    text-align:center;
-    margin-top:15px;
-    color:#94a3b8;
-    ">
-
-    Running XGBoost model<br>
-    Extracting transaction features<br>
-    Calculating fraud probability...
-
-    </p>
-
-    </div>
-
-    `;
     const data = {
         type: document.getElementById("type").value,
         amount: Number(document.getElementById("amount").value),
@@ -2093,7 +2392,7 @@ async function checkFraud() {
 
     try {
 
-        const response = await fetch("https://fraud-detection-api-w9hz.onrender.com/predict", {
+        const response = await fetch(`${API_BASE}/predict`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -2104,7 +2403,9 @@ async function checkFraud() {
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.detail || "Prediction failed.");
+            const err = new Error(result.detail || "Prediction failed.");
+            err.status = response.status;
+            throw err;
         }
 
         const probability = result.fraud_probability * 100;
@@ -2149,6 +2450,28 @@ async function checkFraud() {
                 || `<div class="chip none"><span>✅</span><span>No rule-based indicators triggered</span></div>`
             : `<div class="chip none"><span>✅</span><span>No rule-based indicators triggered</span></div>`;
 
+        const ratioPct = data.oldbalanceOrg > 0 ? ((data.amount / data.oldbalanceOrg) * 100).toFixed(1) + "%" : "n/a";
+
+        const signalPanelHtml = `
+        <div class="card">
+
+            <h3>📡 Transaction signals</h3>
+            <p class="section-note">The exact values submitted for this prediction.</p>
+
+            <div class="signal-grid">
+                <div class="signal-item"><span class="signal-label">Amount</span><span class="signal-value">₹${data.amount.toLocaleString()}</span></div>
+                <div class="signal-item"><span class="signal-label">Sender balance</span><span class="signal-value">₹${data.oldbalanceOrg.toLocaleString()}</span></div>
+                <div class="signal-item"><span class="signal-label">Amount / balance</span><span class="signal-value">${ratioPct}</span></div>
+                <div class="signal-item"><span class="signal-label">Type</span><span class="signal-value">${data.type}</span></div>
+                <div class="signal-item"><span class="signal-label">Destination</span><span class="signal-value">${data.is_dest_new ? "New account" : "Previously seen"}</span></div>
+                <div class="signal-item"><span class="signal-label">Velocity (24h)</span><span class="signal-value">${data.txn_count_24h} txns</span></div>
+                <div class="signal-item"><span class="signal-label">Recency</span><span class="signal-value">${data.recency_hours}h ago</span></div>
+            </div>
+
+        </div>`;
+
+        clearInterval(stageInterval);
+
         resultDiv.innerHTML = `
 
         <div class="card result-hero">
@@ -2179,6 +2502,8 @@ async function checkFraud() {
             ${!result.is_fraud ? `<p class="section-note" style="text-align:center;">Not flagged — a low score, not a guarantee of legitimacy.</p>` : ""}
 
         </div>
+
+        ${signalPanelHtml}
 
         <div class="grid">
 
@@ -2266,6 +2591,16 @@ async function checkFraud() {
 
         `;
 
+        // Keep the persistent model-status panel current with this
+        // prediction's live values (more current than the once-on-load
+        // /model/info snapshot).
+        const msVersion = document.getElementById("msVersion");
+        const msThreshold = document.getElementById("msThreshold");
+        const msInference = document.getElementById("msInference");
+        if (msVersion && result.model_version) msVersion.textContent = result.model_version.slice(0,12);
+        if (msThreshold && result.threshold) msThreshold.textContent = result.threshold;
+        if (msInference && result.inference_ms != null) msInference.textContent = result.inference_ms.toFixed(2) + " ms";
+
         const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const animDelay = reduceMotion ? 0 : 60;
 
@@ -2308,38 +2643,43 @@ async function checkFraud() {
     }
 
     catch(error){
-         
+
+        clearInterval(stageInterval);
+
         btn.disabled=false;
 
         btn.classList.remove("loading");
 
-
         btn.innerHTML="🛡 Analyze Transaction with AI";
+
+        let heading = "❌ Unable to analyze this transaction";
+        let message = "Something went wrong on our end. Please try again in a moment.";
+
+        if (error.status === 429) {
+            heading = "⏳ Too many requests";
+            message = "You've hit the rate limit for this demo. Wait a few seconds and try again.";
+        } else if (error.status === 503) {
+            heading = "🔧 Model temporarily unavailable";
+            message = "The prediction service isn't ready yet. This is usually momentary — try again shortly.";
+        } else if (error.status >= 400 && error.status < 500) {
+            heading = "⚠️ Check the transaction details";
+            message = error.message || "One or more values look invalid.";
+        } else if (!error.status) {
+            heading = "🌐 Couldn't reach the API";
+            message = "The backend may be waking up from a cold start (this can take 30–50s on the free tier) — try again in a moment.";
+        }
 
         resultDiv.innerHTML = `
 
-        <h2 style="color:#ef4444;text-align:center;">
-            ❌ Unable to Analyze Transaction
-        </h2>
+        <div class="card error-state">
 
-        <p style="margin-top:15px;text-align:center;">
-            ${error.message}
-        </p>
+            <h3>${heading}</h3>
 
-        <p style="text-align:center;color:#94a3b8;">
-            Make sure your FastAPI server is running.
-        </p>
+            <p>${message}</p>
 
-        <pre style="
-        margin-top:15px;
-        background:#111827;
-        padding:12px;
-        border-radius:10px;
-        color:#60a5fa;
-        overflow:auto;
-        ">
-uvicorn api.app:app --reload
-        </pre>
+            <button type="button" class="retry-btn" onclick="checkFraud()">🔁 Try again</button>
+
+        </div>
 
         `;
 
