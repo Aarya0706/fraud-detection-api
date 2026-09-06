@@ -24,6 +24,7 @@ from pydantic import BaseModel, Field
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from models.main import predict_fraud
+from models.features import FEATURE_COLS
 
 # ─────────────────────────────────────────────
 # Pydantic Schemas
@@ -113,10 +114,7 @@ def model_info():
     return {
         "algorithm":       "XGBoost (XGBClassifier)",
         "training_rows":   "6,362,620",
-        "auc":             0.9999,
-        "precision":       "99%",
-        "recall":          "99%",
-        "features":        11,
+        "features":        len(FEATURE_COLS),
         "target_latency":  "<100 ms",
     }
 
@@ -125,7 +123,8 @@ def model_info():
 def predict(txn: Transaction):
     """
     Predict fraud for a single financial transaction.
-    Returns fraud probability, decision, risk level, and LLM-generated explanation.
+    Returns fraud probability, decision, risk level, and a rule-based
+    explanation summary.
     """
     t0 = time.time()
     try:
@@ -157,11 +156,18 @@ def predict_batch(req: BatchRequest):
         try:
             r = predict_fraud(txn.model_dump())
         except Exception as e:
+            # Must populate every PredictionResponse field, or FastAPI raises
+            # a 500 Pydantic validation error for this row and takes the
+            # whole batch down with it -- defeating the point of a fallback.
             r = {
                 "fraud_probability": 0.0,
+                "confidence": "0%",
+                "threshold": "N/A",
                 "is_fraud": False,
                 "risk_level": "UNKNOWN",
-                "summary": f"Error: {str(e)}",
+                "model": "N/A",
+                "top_risk_factors": [],
+                "summary": f"Error scoring this transaction: {str(e)}",
             }
         results.append(PredictionResponse(**r, inference_ms=round((time.time()-t_start)*1000, 2)))
 
