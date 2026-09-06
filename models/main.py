@@ -8,6 +8,7 @@ Core prediction engine:
   - Generates human-readable fraud explanations
 """
 
+import hashlib
 import os
 import joblib
 import xgboost as xgb
@@ -45,9 +46,23 @@ _model   = None
 _scaler  = None
 _features = None
 _threshold = 0.5
+_model_version = None
+
+
+def _compute_model_version(model_path):
+    """
+    Same content-addressed scheme as models/train.py's
+    _compute_model_version -- a short hash of the deployed model file, so
+    every prediction can be traced back to exactly which weights produced
+    it (PRD §5: model versioning / registry, rollback, A/B comparison).
+    """
+    with open(model_path, "rb") as f:
+        digest = hashlib.sha256(f.read()).hexdigest()
+    return digest[:12]
+
 
 def _load():
-    global _model, _scaler, _features, _threshold
+    global _model, _scaler, _features, _threshold, _model_version
     if _model is None:
         _model = xgb.XGBClassifier()
         _model.load_model(MODEL_PATH)
@@ -55,6 +70,7 @@ def _load():
         _features = joblib.load(FEATURES_PATH)
         if os.path.exists(THRESHOLD_PATH):
             _threshold = joblib.load(THRESHOLD_PATH)
+        _model_version = _compute_model_version(MODEL_PATH)
 
 
 def _engineer(txn: dict):
@@ -138,6 +154,13 @@ def _shap_top_factors(features_scaled, top_n=3):
     return factors
 
 
+def get_model_version() -> str:
+    """Public accessor so api/app.py can report the deployed model's
+    version (e.g. at GET /model/info) without duplicating the load logic."""
+    _load()
+    return _model_version
+
+
 def predict_fraud(transaction: dict) -> dict:
     """
     Main prediction function.
@@ -204,6 +227,7 @@ def predict_fraud(transaction: dict) -> dict:
         "is_fraud": is_fraud,
         "risk_level": risk_level,
         "model": "XGBoost Fraud Classifier v1.0",
+        "model_version": _model_version,
         "top_risk_factors": top_risk_factors,
         "shap_top_factors": shap_top_factors,
         "summary": summary,

@@ -60,6 +60,12 @@ def test_model_info():
     # it must never be silently backfilled with a stale/fake number.
     assert "metrics" in body
     assert body["metrics"] is None or isinstance(body["metrics"], dict)
+    # model_version is a content-hash of the deployed model file -- must
+    # always be a real string when model artifacts are present, never a
+    # hardcoded/fake placeholder (see PRD §5: model versioning / registry).
+    assert isinstance(body["model_version"], str) and len(body["model_version"]) > 0
+    assert "recent_model_versions" in body
+    assert isinstance(body["recent_model_versions"], list)
 
 
 # ── POST /predict ───────────────────────────────────────────────────
@@ -69,8 +75,14 @@ def test_predict_valid_transaction():
     assert resp.status_code == 200
     body = resp.json()
     for field in ("fraud_probability", "confidence", "threshold", "is_fraud",
-                  "risk_level", "model", "top_risk_factors", "summary", "inference_ms"):
+                  "risk_level", "model", "model_version", "top_risk_factors",
+                  "summary", "inference_ms"):
         assert field in body
+    # Same content-hash version reported at /model/info must match what a
+    # prediction reports -- otherwise "which model served this prediction"
+    # (the whole point of PRD §5's model versioning ask) wouldn't be trustworthy.
+    info_version = client.get("/model/info").json()["model_version"]
+    assert body["model_version"] == info_version
 
 
 def test_predict_includes_real_shap_attribution():

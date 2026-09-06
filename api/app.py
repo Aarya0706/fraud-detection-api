@@ -20,7 +20,7 @@ from fastapi import FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyHeader
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -29,10 +29,11 @@ from slowapi.errors import RateLimitExceeded
 # import prediction engine
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from models.main import predict_fraud
+from models.main import predict_fraud, get_model_version
 from models.features import FEATURE_COLS
 
 METRICS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "metrics.json")
+REGISTRY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "model_registry.jsonl")
 
 
 def _load_metrics():
@@ -46,6 +47,28 @@ def _load_metrics():
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return None
+
+
+def _load_registry_tail(n=5):
+    """
+    Returns the last n entries from models/model_registry.jsonl (most
+    recent training runs), or an empty list if no training run has
+    happened yet in this deployment. See PRD §5: model versioning /
+    registry.
+    """
+    try:
+        with open(REGISTRY_PATH) as f:
+            lines = [line for line in f if line.strip()]
+    except FileNotFoundError:
+        return []
+
+    entries = []
+    for line in lines[-n:]:
+        try:
+            entries.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return entries
 
 # ─────────────────────────────────────────────
 # Pydantic Schemas
@@ -70,12 +93,22 @@ class Transaction(BaseModel):
 
 
 class PredictionResponse(BaseModel):
+    # model_version (below) is a legitimate field name that happens to
+    # collide with Pydantic's own reserved "model_" prefix; this just
+    # tells Pydantic that's intentional instead of warning on every import.
+    model_config = ConfigDict(protected_namespaces=())
+
     fraud_probability: float
     confidence: str
     threshold: str
     is_fraud: bool
     risk_level: str
     model: str
+    # Content-addressed hash of the deployed model file, so a specific
+    # prediction can be traced back to exactly which trained weights
+    # produced it (PRD §5: model versioning / rollback / A-B comparison).
+    # Optional/defaulted for the same reason as shap_top_factors below.
+    model_version: Optional[str] = None
     top_risk_factors: List[str]
     # Real per-prediction SHAP attribution from the trained XGBoost model
     # (see models.main._shap_top_factors). Optional/defaulted so the
@@ -175,15 +208,25 @@ def health():
 @app.get("/model/info", tags=["System"])
 def model_info():
     metrics = _load_metrics()
+    try:
+        model_version = get_model_version()
+    except FileNotFoundError:
+        model_version = None
     return {
         "algorithm":       "XGBoost (XGBClassifier)",
         "training_rows":   "6,362,620",
         "features":        len(FEATURE_COLS),
         "target_latency":  "<100 ms",
+        # Content-addressed hash of the currently-deployed model file --
+        # None only if the model artifacts aren't present at all.
+        "model_version":   model_version,
         # None until the next `python -m models.train` run writes
         # models/metrics.json (nothing trustworthy is hardcoded here --
         # the old hardcoded 0.9999 AUC was itself the bug, see PRD 3.2).
         "metrics":         metrics,
+        # Most recent training runs, oldest first -- empty until the
+        # first `python -m models.train` run in this deployment.
+        "recent_model_versions": _load_registry_tail(),
     }
 
 

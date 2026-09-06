@@ -71,6 +71,7 @@ def isolated_model_dir(tmp_path, monkeypatch):
     monkeypatch.setattr(train_module, "SCALER_PATH", str(tmp_path / "scaler.pkl"))
     monkeypatch.setattr(train_module, "FEATURES_PATH", str(tmp_path / "feature_names.pkl"))
     monkeypatch.setattr(train_module, "METRICS_PATH", str(tmp_path / "metrics.json"))
+    monkeypatch.setattr(train_module, "REGISTRY_PATH", str(tmp_path / "model_registry.jsonl"))
     monkeypatch.setattr(train_module, "MODEL_DIR", str(tmp_path))
     return tmp_path
 
@@ -114,3 +115,32 @@ def test_train_saves_metrics_file(isolated_model_dir, monkeypatch):
     assert 0.0 <= metrics["roc_auc"] <= 1.0
     assert 0.0 <= metrics["pr_auc"] <= 1.0
     assert metrics["n_features"] == len(train_module.FEATURE_COLS)
+
+
+def test_train_appends_to_model_registry(isolated_model_dir, monkeypatch):
+    """
+    PRD §5 "Model versioning / registry": every training run should add
+    one line to model_registry.jsonl (not overwrite it), so past model
+    versions and their metrics survive later retrains -- unlike
+    xgb_fraud.json / metrics.json, which get overwritten each run.
+    """
+    df = _synthetic_paysim_df()
+    monkeypatch.setattr(train_module, "load_data", lambda: df)
+
+    train_module.train()
+    train_module.train()  # second run -- registry should now have 2 lines
+
+    with open(train_module.REGISTRY_PATH) as f:
+        lines = [line for line in f if line.strip()]
+
+    assert len(lines) == 2
+    entries = [json.loads(line) for line in lines]
+    for entry in entries:
+        for key in ("model_version", "trained_at_utc", "roc_auc",
+                    "pr_auc", "best_threshold", "n_train_rows", "n_test_rows"):
+            assert key in entry
+
+    # Same model file re-hashed identically-trained data with the same
+    # SEED -> versions may legitimately collide, but the field itself
+    # must always be a non-empty content hash, never blank/placeholder.
+    assert all(len(e["model_version"]) > 0 for e in entries)
