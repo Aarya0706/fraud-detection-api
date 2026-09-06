@@ -73,6 +73,26 @@ def test_predict_valid_transaction():
         assert field in body
 
 
+def test_predict_includes_real_shap_attribution():
+    """
+    Regression test for PRD §5 "Per-prediction SHAP explanations": the API
+    must return real, per-prediction model attribution (computed via
+    XGBoost's exact SHAP support), not just the hardcoded rule list.
+    """
+    resp = client.post("/predict", json=VALID_TXN)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "shap_top_factors" in body
+    factors = body["shap_top_factors"]
+    assert isinstance(factors, list)
+    assert len(factors) > 0
+    for factor in factors:
+        assert "feature" in factor
+        assert "label" in factor
+        assert "shap_value" in factor
+        assert factor["direction"] in ("increases risk", "decreases risk")
+
+
 def test_predict_rejects_unknown_type_end_to_end():
     """
     The unknown-type rejection (models/features.py raising ValueError) must
