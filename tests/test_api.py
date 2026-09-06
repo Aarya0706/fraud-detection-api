@@ -9,7 +9,6 @@ feature_names.pkl, threshold.pkl) to be present, since predict_fraud
 loads them lazily on first use.
 """
 
-import pytest
 from fastapi.testclient import TestClient
 
 from api.app import app
@@ -57,6 +56,10 @@ def test_model_info():
     # that no longer applies post-fix; it must not be reported at all
     # unless it's a real, freshly computed number.
     assert "auc" not in body
+    # metrics is None until a train.py run writes models/metrics.json;
+    # it must never be silently backfilled with a stale/fake number.
+    assert "metrics" in body
+    assert body["metrics"] is None or isinstance(body["metrics"], dict)
 
 
 # ── POST /predict ───────────────────────────────────────────────────
