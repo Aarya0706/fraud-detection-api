@@ -149,7 +149,7 @@ The application predicts fraud probability, classifies transaction risk, explain
 | 🌐 Interactive Dashboard | Responsive HTML/CSS/JS frontend |
 | 📈 Fraud Probability | Confidence-based prediction |
 | 🚨 Risk Classification | LOW / MEDIUM / HIGH / CRITICAL |
-| 📊 Explainable AI | Risk factors & investigation summary |
+| 📊 Explainable AI | Real per-prediction SHAP attribution + rule-based risk factors |
 | 📦 Batch Prediction | Multiple transactions supported |
 | 📚 Swagger Docs | Interactive API testing |
 
@@ -495,8 +495,8 @@ frontend/index.html
 - [x] Vercel deployment
 - [x] Render deployment
 - [x] Interactive dashboard
-- [ ] SHAP explainability
-- [ ] Docker support
+- [x] SHAP explainability
+- [x] Docker support
 - [ ] User authentication
 - [ ] Persistent transaction history
 
@@ -505,8 +505,6 @@ frontend/index.html
 # 🚀 Future Enhancements
 
 - 🤖 LLM-powered Investigation Reports
-- 📊 SHAP Explainability
-- 🐳 Docker Deployment
 - ☁ Kubernetes Support
 - 👤 Authentication & RBAC
 - 📈 Enterprise Analytics Dashboard

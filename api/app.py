@@ -14,7 +14,7 @@ Run:
 
 import json
 import time
-from typing import List
+from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
@@ -77,6 +77,11 @@ class PredictionResponse(BaseModel):
     risk_level: str
     model: str
     top_risk_factors: List[str]
+    # Real per-prediction SHAP attribution from the trained XGBoost model
+    # (see models.main._shap_top_factors). Optional/defaulted so the
+    # batch-endpoint error fallback (which can't compute SHAP for a
+    # transaction that failed feature engineering) still validates.
+    shap_top_factors: Optional[List[dict]] = None
     summary: str
     inference_ms: float
 

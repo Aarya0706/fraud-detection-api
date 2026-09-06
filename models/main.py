@@ -12,8 +12,25 @@ import os
 import joblib
 import xgboost as xgb
 
+import numpy as np
 import pandas as pd
 from models.features import engineer_features, FEATURE_COLS
+
+# Human-readable label for each engineered feature, used when surfacing
+# SHAP contributions -- FEATURE_COLS entries are model-internal names
+# (e.g. "log_oldbalanceOrg") that mean little to an API consumer.
+FEATURE_LABELS = {
+    "type_enc": "Transaction type",
+    "log_amount": "Transaction amount",
+    "log_oldbalanceOrg": "Sender's balance before the transaction",
+    "log_oldbalanceDest": "Recipient's balance before the transaction",
+    "amount_ratio_orig": "Amount as a share of sender's balance",
+    "would_drain_orig": "Transaction would fully drain sender's account",
+    "dest_balance_anomaly": "Recipient account had a zero prior balance",
+    "is_dest_new": "Recipient has never received a transaction before",
+    "recency_hours": "Time since sender's last transaction",
+    "txn_count_24h": "Sender's transaction count in the last 24h",
+}
 
 
 # ── Paths ────────────────────────────────────────────────────────
@@ -89,6 +106,38 @@ def _generate_summary(transaction, fraud_prob, risk_level, is_fraud, risk_factor
     )
 
 
+def _shap_top_factors(features_scaled, top_n=3):
+    """
+    Real per-prediction feature attribution via XGBoost's built-in exact
+    SHAP support (booster.predict(..., pred_contribs=True)) -- no extra
+    `shap` dependency needed, since XGBoost computes exact tree SHAP
+    values natively. Substantiates the README's "Explainable AI" claim
+    with actual model attribution instead of only the hardcoded rule list
+    below (see PRD §5: "Per-prediction SHAP explanations").
+
+    Returns the top_n features by |contribution|, each with its signed
+    SHAP value and a human-readable label + direction.
+    """
+    dmatrix = xgb.DMatrix(features_scaled, feature_names=FEATURE_COLS)
+    contribs = _model.get_booster().predict(dmatrix, pred_contribs=True)[0]
+
+    # Last column is the bias/base-value term, not a feature contribution.
+    feature_contribs = contribs[:-1]
+
+    order = np.argsort(-np.abs(feature_contribs))[:top_n]
+    factors = []
+    for idx in order:
+        feature = FEATURE_COLS[idx]
+        value = float(feature_contribs[idx])
+        factors.append({
+            "feature": feature,
+            "label": FEATURE_LABELS.get(feature, feature),
+            "shap_value": round(value, 4),
+            "direction": "increases risk" if value > 0 else "decreases risk",
+        })
+    return factors
+
+
 def predict_fraud(transaction: dict) -> dict:
     """
     Main prediction function.
@@ -109,6 +158,7 @@ def predict_fraud(transaction: dict) -> dict:
     is_fraud = fraud_prob >= _threshold
     risk_level = _risk_level(fraud_prob)
     top_risk_factors = []
+    shap_top_factors = _shap_top_factors(features_scaled)
 
     amount = txn_dict.get("amount", 0)
     old_sender = txn_dict.get("oldbalanceOrg", 0)
@@ -155,5 +205,6 @@ def predict_fraud(transaction: dict) -> dict:
         "risk_level": risk_level,
         "model": "XGBoost Fraud Classifier v1.0",
         "top_risk_factors": top_risk_factors,
+        "shap_top_factors": shap_top_factors,
         "summary": summary,
     }
