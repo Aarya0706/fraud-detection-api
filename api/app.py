@@ -31,6 +31,7 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from models.main import predict_fraud, get_model_version
 from models.features import FEATURE_COLS
+from models.monitoring import log_prediction, get_summary as get_monitoring_summary
 
 METRICS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "metrics.json")
 REGISTRY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "model_registry.jsonl")
@@ -230,6 +231,17 @@ def model_info():
     }
 
 
+@app.get("/metrics/predictions", tags=["System"])
+def prediction_metrics():
+    """
+    Structured monitoring for prediction traffic served by this instance:
+    volume, fraud rate, latency distribution, and a fraud-probability
+    drift signal, broken down by model_version. See models/monitoring.py
+    for scope/limits (in-memory + local-disk, resets on cold start).
+    """
+    return get_monitoring_summary()
+
+
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
 @limiter.limit("30/minute")
 def predict(request: Request, txn: Transaction, _auth: bool = Security(require_api_key)):
@@ -250,6 +262,14 @@ def predict(request: Request, txn: Transaction, _auth: bool = Security(require_a
         raise HTTPException(status_code=500, detail=str(e))
 
     inference_ms = round((time.time() - t0) * 1000, 2)
+    log_prediction(
+        endpoint="/predict",
+        model_version=result.get("model_version"),
+        fraud_probability=result.get("fraud_probability"),
+        risk_level=result.get("risk_level"),
+        is_fraud=result.get("is_fraud"),
+        inference_ms=inference_ms,
+    )
     return PredictionResponse(**result, inference_ms=inference_ms)
 
 
@@ -282,7 +302,16 @@ def predict_batch(request: Request, req: BatchRequest, _auth: bool = Security(re
                 "top_risk_factors": [],
                 "summary": f"Error scoring this transaction: {str(e)}",
             }
-        results.append(PredictionResponse(**r, inference_ms=round((time.time()-t_start)*1000, 2)))
+        row_inference_ms = round((time.time() - t_start) * 1000, 2)
+        log_prediction(
+            endpoint="/predict/batch",
+            model_version=r.get("model_version"),
+            fraud_probability=r.get("fraud_probability"),
+            risk_level=r.get("risk_level"),
+            is_fraud=r.get("is_fraud"),
+            inference_ms=row_inference_ms,
+        )
+        results.append(PredictionResponse(**r, inference_ms=row_inference_ms))
 
     fraud_count = sum(1 for r in results if r.is_fraud)
     return BatchResponse(

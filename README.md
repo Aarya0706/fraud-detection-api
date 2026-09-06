@@ -206,6 +206,16 @@ Prediction JSON
 > seconds** to wake it up — that's expected behavior for the free tier,
 > not a bug. Subsequent requests are fast (sub-100ms inference).
 
+> **Note on API-key auth:** The API supports optional key-based auth
+> (`API_KEY` env var, checked via an `X-API-Key` header on the
+> prediction routes) but it's **off by default, intentionally**, for
+> this public demo. Abuse protection here comes from rate limiting
+> (30/min on `/predict`, 10/min on `/predict/batch`) and CORS restricted
+> to known origins, not a key — the goal is for anyone (a recruiter, a
+> reviewer) to be able to try the live demo with zero setup friction.
+> If this were deployed for real production traffic rather than a
+> portfolio demo, turning the key on would be the first thing to flip.
+
 ---
 
 # 🔄 API Response Flow
