@@ -121,3 +121,23 @@ def test_predict_batch_partial_failure_degrades_gracefully():
     for field in ("fraud_probability", "confidence", "threshold", "is_fraud",
                   "risk_level", "model", "top_risk_factors", "summary", "inference_ms"):
         assert field in failing_row
+
+
+# ── Rate limiting ────────────────────────────────────────────────────
+
+def test_predict_rate_limit_returns_429_past_threshold():
+    """
+    /predict is limited to 30/minute per client. The 31st request within
+    the window should be rejected with 429, not silently processed.
+
+    Resets the shared in-memory limiter first so quota consumed by earlier
+    tests in this module doesn't cause a false failure here.
+    """
+    from api.app import limiter
+    limiter.reset()
+
+    for _ in range(30):
+        resp = client.post("/predict", json=VALID_TXN)
+        assert resp.status_code == 200
+    resp = client.post("/predict", json=VALID_TXN)
+    assert resp.status_code == 429

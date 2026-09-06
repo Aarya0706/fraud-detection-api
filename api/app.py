@@ -15,10 +15,15 @@ Run:
 import time
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, Field
+
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 # import prediction engine
 import sys, os
@@ -82,13 +87,50 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
+
+# ── CORS ─────────────────────────────────────────────────────────
+# Known deployed frontends, plus common local dev ports. Override/extend via
+# the ALLOWED_ORIGINS env var (comma-separated) without touching code, e.g.
+# for a new frontend deployment or a staging URL.
+_DEFAULT_ORIGINS = [
+    "https://fraud-detection-api-eta.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
+_env_origins = os.environ.get("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = _DEFAULT_ORIGINS + [o.strip() for o in _env_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── Rate limiting ────────────────────────────────────────────────
+# Keyed by client IP. Prediction routes get an explicit lower limit since
+# they're the expensive/abusable ones; everything else falls back to the
+# global default.
+limiter = Limiter(key_func=get_remote_address, default_limits=["120/minute"])
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# ── Optional API-key auth ───────────────────────────────────────
+# Off by default (fine for a public portfolio demo). Set the API_KEY env
+# var to require an `X-API-Key` header on prediction routes -- lets this
+# be locked down without a code change if it's ever exposed beyond a demo.
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+_REQUIRED_API_KEY = os.environ.get("API_KEY")
+
+
+def require_api_key(key: str = Security(_api_key_header)):
+    if _REQUIRED_API_KEY and key != _REQUIRED_API_KEY:
+        raise HTTPException(status_code=401, detail="Missing or invalid API key.")
+    return True
+
 
 _startup_time = time.time()
 
@@ -120,7 +162,8 @@ def model_info():
 
 
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
-def predict(txn: Transaction):
+@limiter.limit("30/minute")
+def predict(request: Request, txn: Transaction, _auth: bool = Security(require_api_key)):
     """
     Predict fraud for a single financial transaction.
     Returns fraud probability, decision, risk level, and a rule-based
@@ -142,7 +185,8 @@ def predict(txn: Transaction):
 
 
 @app.post("/predict/batch", response_model=BatchResponse, tags=["Prediction"])
-def predict_batch(req: BatchRequest):
+@limiter.limit("10/minute")
+def predict_batch(request: Request, req: BatchRequest, _auth: bool = Security(require_api_key)):
     """
     Predict fraud for a batch of transactions (max 500).
     """
