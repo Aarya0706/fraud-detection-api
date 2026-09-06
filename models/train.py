@@ -2,6 +2,7 @@
 Train XGBoost Fraud Detection Model using the PaySim Dataset
 """
 
+import hashlib
 import json
 import os
 import platform
@@ -41,6 +42,7 @@ MODEL_PATH = os.path.join(MODEL_DIR, "xgb_fraud.json")
 SCALER_PATH = os.path.join(MODEL_DIR, "scaler.pkl")
 FEATURES_PATH = os.path.join(MODEL_DIR, "feature_names.pkl")
 METRICS_PATH = os.path.join(MODEL_DIR, "metrics.json")
+REGISTRY_PATH = os.path.join(MODEL_DIR, "model_registry.jsonl")
 
 # Kaggle's own PaySim page warns that balance columns can carry simulator
 # artifacts specifically on fraud rows (fraud transactions get cancelled
@@ -187,9 +189,20 @@ def train():
         n_test_rows=len(X_test),
     )
 
+    model_version = _compute_model_version(MODEL_PATH)
+    append_to_registry(
+        model_version=model_version,
+        roc_auc=roc_auc,
+        pr_auc=pr_auc,
+        best_threshold=best_threshold,
+        n_train_rows=len(X_train),
+        n_test_rows=len(X_test),
+    )
+
     print("\nModel saved successfully!")
     print(MODEL_PATH)
     print(f"Metrics saved to {METRICS_PATH}")
+    print(f"Model version: {model_version} (see {REGISTRY_PATH})")
     
 def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
                   n_train_rows, n_test_rows):
@@ -221,6 +234,46 @@ def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
 
     with open(METRICS_PATH, "w") as f:
         json.dump(metrics, f, indent=2)
+
+
+def _compute_model_version(model_path):
+    """
+    Content-addressed version id: a short hash of the saved model file
+    itself, so the version always reflects exactly which weights are
+    deployed -- it can't drift out of sync the way a manually-bumped
+    version number could.
+    """
+    with open(model_path, "rb") as f:
+        digest = hashlib.sha256(f.read()).hexdigest()
+    return digest[:12]
+
+
+def append_to_registry(model_version, roc_auc, pr_auc, best_threshold,
+                        n_train_rows, n_test_rows):
+    """
+    Appends one line per training run to models/model_registry.jsonl --
+    an append-only log of every model version ever produced, so past
+    versions/metrics aren't lost the moment a new run overwrites
+    xgb_fraud.json and metrics.json. Supports PRD §5 "Model versioning /
+    registry: track which model version served which prediction, to
+    support rollback and A/B comparison as the model evolves."
+
+    This logs training-run history, not live traffic; predict_fraud()
+    separately reports model_version on every response so a caller (or
+    a future structured-logging layer) can correlate a specific
+    prediction back to a row in this file.
+    """
+    entry = {
+        "model_version": model_version,
+        "trained_at_utc": datetime.now(timezone.utc).isoformat(),
+        "roc_auc": float(roc_auc),
+        "pr_auc": float(pr_auc),
+        "best_threshold": float(best_threshold),
+        "n_train_rows": int(n_train_rows),
+        "n_test_rows": int(n_test_rows),
+    }
+    with open(REGISTRY_PATH, "a") as f:
+        f.write(json.dumps(entry) + "\n")
 
 
 def save_feature_importance(model):
