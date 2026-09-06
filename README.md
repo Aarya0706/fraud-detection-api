@@ -200,6 +200,12 @@ XGBoost Model
 Prediction JSON
 ```
 
+> **Note on cold starts:** The backend runs on Render's free tier, which
+> spins the service down after ~15 minutes of inactivity. If you're
+> clicking in from a cold link, the first request can take **30–50
+> seconds** to wake it up — that's expected behavior for the free tier,
+> not a bug. Subsequent requests are fast (sub-100ms inference).
+
 ---
 
 # 🔄 API Response Flow
@@ -304,24 +310,31 @@ The enterprise dashboard displays:
 
 # 📊 Model Performance
 
-| Metric | Score |
+> **Note:** The numbers below (0.9997 ROC-AUC, 99%+ precision/recall) were
+> from an earlier version of the model that turned out to be leaking the
+> label through post-transaction balance fields — see the leakage fix in
+> the changelog. They no longer reflect the current model and are kept
+> here only as a historical marker until the next training run.
+> `python -m models.train` now saves real metrics to `models/metrics.json`
+> automatically (also surfaced at `GET /model/info`), so this table will
+> be updated with an honest number the next time the model is retrained.
+
+| Metric | Score (pre-fix, stale) |
 |---------|------:|
-| ROC-AUC | ⭐ 0.9997 |
-| Precision | ⭐ 99.24% |
-| Recall | ⭐ 99.00% |
-| F1 Score | ⭐ 0.9948 |
-| Dataset | ⭐ 6.3+ Million Transactions |
+| ROC-AUC | 0.9997 |
+| Precision | 99.24% |
+| Recall | 99.00% |
+| F1 Score | 0.9948 |
+| Dataset | 6.3+ Million Transactions |
 
 ---
 
 # 📈 Project Statistics
 
 - ✔ 6.3 Million PaySim Transactions
-- ✔ 11 Engineered Features
+- ✔ 10 Engineered Features
 - ✔ XGBoost Binary Classifier
-- ✔ ROC-AUC: 0.9997
-- ✔ Precision: 99.24%
-- ✔ Recall: 99%
+- ⏳ ROC-AUC / Precision / Recall: pending post-fix retrain (see note above)
 - ✔ Sub-100ms Inference
 - ✔ Vercel + Render Deployment
 

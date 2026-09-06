@@ -2,12 +2,17 @@
 Train XGBoost Fraud Detection Model using the PaySim Dataset
 """
 
+import json
 import os
+import platform
+import sys
+from datetime import datetime, timezone
+
 import joblib
 import numpy as np
 import pandas as pd
 import xgboost as xgb
- 
+
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -35,6 +40,7 @@ DATA_PATH = os.path.join(
 MODEL_PATH = os.path.join(MODEL_DIR, "xgb_fraud.json")
 SCALER_PATH = os.path.join(MODEL_DIR, "scaler.pkl")
 FEATURES_PATH = os.path.join(MODEL_DIR, "feature_names.pkl")
+METRICS_PATH = os.path.join(MODEL_DIR, "metrics.json")
 
 # Kaggle's own PaySim page warns that balance columns can carry simulator
 # artifacts specifically on fraud rows (fraud transactions get cancelled
@@ -143,17 +149,23 @@ def train():
     print(f"\nBest Threshold: {best_threshold:.3f}")
 
     predictions = (probabilities >= best_threshold).astype(int)
+
+    roc_auc = roc_auc_score(y_test, probabilities)
+    pr_auc = average_precision_score(y_test, probabilities)
+    report = classification_report(y_test, predictions, output_dict=True)
+    cm = confusion_matrix(y_test, predictions)
+
     print("\n==============================")
     print("Model Evaluation")
     print("==============================")
-    print(f"ROC-AUC : {roc_auc_score(y_test, probabilities):.4f}")
-    print(f"PR-AUC  : {average_precision_score(y_test, probabilities):.4f}")
+    print(f"ROC-AUC : {roc_auc:.4f}")
+    print(f"PR-AUC  : {pr_auc:.4f}")
 
     print("\nClassification Report\n")
     print(classification_report(y_test, predictions))
 
     print("\nConfusion Matrix\n")
-    print(confusion_matrix(y_test, predictions))
+    print(cm)
 
     model.save_model(MODEL_PATH)
     
@@ -165,9 +177,52 @@ def train():
     joblib.dump(best_threshold,
             os.path.join(MODEL_DIR, "threshold.pkl"))
 
+    save_metrics(
+        roc_auc=roc_auc,
+        pr_auc=pr_auc,
+        report=report,
+        confusion=cm,
+        best_threshold=best_threshold,
+        n_train_rows=len(X_train),
+        n_test_rows=len(X_test),
+    )
+
     print("\nModel saved successfully!")
     print(MODEL_PATH)
+    print(f"Metrics saved to {METRICS_PATH}")
     
+def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
+                  n_train_rows, n_test_rows):
+    """
+    Persists the metrics train.py already prints to stdout, so there's a
+    single source of truth for "what's the real accuracy now" instead of
+    numbers only living in a terminal scrollback (see PRD 3.2: the README's
+    ROC-AUC 0.9997 badge went stale exactly this way after the leakage fix).
+    """
+    fraud_report = report.get("1", report.get("1.0", {}))
+
+    metrics = {
+        "trained_at_utc": datetime.now(timezone.utc).isoformat(),
+        "python_version": sys.version.split()[0],
+        "platform": platform.platform(),
+        "xgboost_version": xgb.__version__,
+        "n_features": len(FEATURE_COLS),
+        "n_train_rows": int(n_train_rows),
+        "n_test_rows": int(n_test_rows),
+        "best_threshold": float(best_threshold),
+        "roc_auc": float(roc_auc),
+        "pr_auc": float(pr_auc),
+        "precision_fraud_class": fraud_report.get("precision"),
+        "recall_fraud_class": fraud_report.get("recall"),
+        "f1_fraud_class": fraud_report.get("f1-score"),
+        "accuracy": report.get("accuracy"),
+        "confusion_matrix": confusion.tolist(),
+    }
+
+    with open(METRICS_PATH, "w") as f:
+        json.dump(metrics, f, indent=2)
+
+
 def save_feature_importance(model):
     importance = pd.DataFrame({
         "Feature": FEATURE_COLS,

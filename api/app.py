@@ -12,8 +12,9 @@ Run:
   uvicorn api.app:app --host 0.0.0.0 --port 8000 --reload
 """
 
+import json
 import time
-from typing import List, Optional
+from typing import List
 
 from fastapi import FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,6 +31,21 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from models.main import predict_fraud
 from models.features import FEATURE_COLS
+
+METRICS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "metrics.json")
+
+
+def _load_metrics():
+    """
+    Returns the metrics train.py saved on its last run, or None if a
+    training run hasn't produced models/metrics.json yet (e.g. this is
+    still the pre-fix model bundle). See PRD 3.2.
+    """
+    try:
+        with open(METRICS_PATH) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
 
 # ─────────────────────────────────────────────
 # Pydantic Schemas
@@ -153,11 +169,16 @@ def health():
 
 @app.get("/model/info", tags=["System"])
 def model_info():
+    metrics = _load_metrics()
     return {
         "algorithm":       "XGBoost (XGBClassifier)",
         "training_rows":   "6,362,620",
         "features":        len(FEATURE_COLS),
         "target_latency":  "<100 ms",
+        # None until the next `python -m models.train` run writes
+        # models/metrics.json (nothing trustworthy is hardcoded here --
+        # the old hardcoded 0.9999 AUC was itself the bug, see PRD 3.2).
+        "metrics":         metrics,
     }
 
 

@@ -1,0 +1,8 @@
+[flake8]
+# Deliberately narrow: catches real bugs (syntax errors, unused/undefined
+# names) without failing CI on pre-existing style choices (E2xx spacing,
+# E3xx blank lines, E401/E402 import placement) that aren't worth a
+# repo-wide reformat as part of adding CI.
+select = E9,F
+max-line-length = 120
+exclude = .git,__pycache__,frontend,screenshots,models/xgb_fraud.json

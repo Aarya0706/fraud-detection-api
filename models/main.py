@@ -10,7 +10,6 @@ Core prediction engine:
 
 import os
 import joblib
-import numpy as np
 import xgboost as xgb
 
 import pandas as pd
