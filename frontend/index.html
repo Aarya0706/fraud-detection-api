@@ -1038,6 +1038,231 @@ filter:drop-shadow(0 0 9px #fbbf24);
     box-shadow:0 10px 25px rgba(0,0,0,.25);
 }
 
+/* ================= ANALYZER ================= */
+
+.analyzer-group{
+    margin-bottom:26px;
+}
+
+.group-heading{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-size:14px;
+    font-weight:600;
+    color:#cbd5e1;
+    margin-bottom:14px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.group-heading-note{
+    font-size:11.5px;
+    font-weight:400;
+    color:#5b6b89;
+}
+
+/* ================= RESULT: HERO & GAUGE ================= */
+
+.result-hero{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:10px;
+    padding-bottom:6px;
+}
+
+.result-verdict{
+    font-size:26px;
+    font-weight:700;
+}
+
+.gauge-wrap{
+    display:flex;
+    justify-content:center;
+    margin:6px 0 4px;
+}
+
+.gauge-svg{
+    width:260px;
+    max-width:78vw;
+    height:auto;
+    overflow:visible;
+}
+
+.gauge-track{
+    fill:none;
+    stroke:rgba(255,255,255,.08);
+    stroke-width:16;
+    stroke-linecap:round;
+}
+
+.gauge-fill{
+    fill:none;
+    stroke-width:16;
+    stroke-linecap:round;
+    transition:stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1), stroke 1.4s ease;
+}
+
+.gauge-pct{
+    font-family:'Sora',sans-serif;
+    font-weight:800;
+}
+
+.gauge-caption{
+    fill:#94a3b8;
+    font-family:'Poppins',sans-serif;
+}
+
+@media(prefers-reduced-motion:reduce){
+    .gauge-fill{
+        transition:none;
+    }
+}
+
+/* ================= RESULT: METRICS ================= */
+
+.metric-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:11px 0;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.metric-row:last-child{
+    border-bottom:none;
+}
+
+.metric-label{
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.metric-value{
+    font-weight:600;
+    font-size:14.5px;
+    text-align:right;
+}
+
+.metric-value.mono{
+    font-family:monospace;
+    font-size:12.5px;
+    color:#60a5fa;
+}
+
+/* ================= RESULT: SHAP ================= */
+
+.shap-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+}
+
+.shap-label{
+    flex:0 0 44%;
+    font-size:13px;
+    color:#cbd5e1;
+    text-align:right;
+    line-height:1.3;
+}
+
+.shap-axis{
+    flex:1;
+    position:relative;
+    height:20px;
+    background:rgba(255,255,255,.04);
+    border-radius:6px;
+}
+
+.shap-center-line{
+    position:absolute;
+    left:50%;
+    top:-3px;
+    bottom:-3px;
+    width:1px;
+    background:rgba(255,255,255,.18);
+}
+
+.shap-bar{
+    position:absolute;
+    top:2px;
+    bottom:2px;
+    border-radius:4px;
+    transition:width 1s cubic-bezier(.22,1,.36,1);
+}
+
+.shap-bar.increase{
+    left:50%;
+    background:linear-gradient(90deg,#f97316,#ef4444);
+}
+
+.shap-bar.decrease{
+    right:50%;
+    background:linear-gradient(90deg,#16a34a,#22c55e);
+}
+
+.shap-value{
+    flex:0 0 64px;
+    font-size:12px;
+    font-weight:600;
+    font-family:monospace;
+}
+
+.shap-legend{
+    display:flex;
+    gap:22px;
+    margin-top:18px;
+    font-size:12.5px;
+    color:#94a3b8;
+    flex-wrap:wrap;
+}
+
+.shap-legend-dot{
+    width:10px;
+    height:10px;
+    border-radius:3px;
+    display:inline-block;
+    margin-right:6px;
+    vertical-align:-1px;
+}
+
+/* ================= RESULT: RISK FACTOR CHIPS ================= */
+
+.chip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:14px;
+}
+
+.chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 14px;
+    background:rgba(239,68,68,.09);
+    border:1px solid rgba(239,68,68,.28);
+    border-radius:999px;
+    font-size:13px;
+    color:#fecaca;
+}
+
+.chip.none{
+    background:rgba(255,255,255,.03);
+    border-color:rgba(255,255,255,.08);
+    color:#94a3b8;
+}
+
+.section-note{
+    font-size:12px;
+    color:#5b6b89;
+    margin-top:-2px;
+    margin-bottom:2px;
+}
+
 </style>
 
 </head>
@@ -1310,11 +1535,17 @@ PaySim transactions.
 
 </div>
 
+<div class="analyzer-card">
+
+<div class="analyzer-group">
+
+<div class="group-heading">Transaction details</div>
+
 <div class="grid">
 
 <div class="field">
 
-<label>🔄 Transaction Type</label>
+<label>🔄 Transaction type</label>
 
 <select id="type">
 
@@ -1330,7 +1561,7 @@ PaySim transactions.
 
 <div class="field">
 
-<label>💰 Transaction Amount</label>
+<label>💰 Amount</label>
 
 <input id="amount" type="number" placeholder="50,000">
 
@@ -1338,48 +1569,72 @@ PaySim transactions.
 
 <div class="field">
 
-<label>🏦 Sender Balance Before</label>
+<label>🏦 Sender balance before</label>
 
 <input id="oldbalanceOrg" type="number" placeholder="100,000">
 
-
 </div>
 
 <div class="field">
 
-<label>👤 Sender Balance After</label>
-
-<input id="newbalanceOrig" type="number" placeholder="50,000">
-
-</div>
-
-<div class="field">
-
-<label>🏦 Receiver Balance Before</label>
+<label>🏦 Receiver balance before</label>
 
 <input id="oldbalanceDest" type="number" placeholder="0">
 
 </div>
 
+</div>
+
+</div>
+
+<div class="analyzer-group">
+
+<div class="group-heading">
+Account &amp; behavior signals
+<span class="group-heading-note">read by the model, not just the balances above</span>
+</div>
+
+<div class="grid">
+
 <div class="field">
 
-<label>👤 Receiver Balance After</label>
+<label>⏱ Hours since sender's last transaction</label>
 
-<input id="newbalanceDest" type="number" placeholder="50,000">
+<input id="recency_hours" type="number" step="0.1" min="0" placeholder="24">
+
+</div>
+
+<div class="field">
+
+<label>📈 Sender's transactions in last 24h</label>
+
+<input id="txn_count_24h" type="number" min="0" placeholder="1">
+
+</div>
+
+<div class="field">
+
+<label>🆕 Destination account</label>
+
+<select id="is_dest_new">
+<option value="0">Previously seen</option>
+<option value="1">New / unseen</option>
+</select>
 
 </div>
 
 </div>
 
+</div>
 
-<div style="display:flex;gap:15px;margin-top:30px;">
+<div style="display:flex;gap:15px;margin-top:10px;">
 
 <button
 type="button"
 onclick="loadFraudSample()"
 style="background:#dc2626;">
 
-🚨 Fraud Sample
+🚨 Load suspicious sample
 
 </button>
 
@@ -1388,17 +1643,19 @@ type="button"
 onclick="loadLegitSample()"
 style="background:#16a34a;">
 
-✅ Legit Sample
+✅ Load legitimate sample
 
 </button>
 
 </div>
 
-<button onclick="checkFraud()">
+<button onclick="checkFraud()" class="analyze-btn">
 
 🛡 Analyze Transaction with AI
 
 </button>
+
+</div>
 
 <div id="result"></div>
 
@@ -1747,11 +2004,13 @@ document.getElementById("amount").value=800000;
 
 document.getElementById("oldbalanceOrg").value=900000;
 
-document.getElementById("newbalanceOrig").value=0;
-
 document.getElementById("oldbalanceDest").value=0;
 
-document.getElementById("newbalanceDest").value=800000;
+document.getElementById("recency_hours").value=0.3;
+
+document.getElementById("txn_count_24h").value=14;
+
+document.getElementById("is_dest_new").value="1";
 
 }
 
@@ -1763,11 +2022,13 @@ document.getElementById("amount").value=250;
 
 document.getElementById("oldbalanceOrg").value=5000;
 
-document.getElementById("newbalanceOrig").value=4750;
-
 document.getElementById("oldbalanceDest").value=2000;
 
-document.getElementById("newbalanceDest").value=2250;
+document.getElementById("recency_hours").value=18;
+
+document.getElementById("txn_count_24h").value=1;
+
+document.getElementById("is_dest_new").value="0";
 
 } 
 
@@ -1779,11 +2040,9 @@ async function checkFraud() {
     if (
         !document.getElementById("amount").value ||
         !document.getElementById("oldbalanceOrg").value ||
-        !document.getElementById("newbalanceOrig").value ||
-        !document.getElementById("oldbalanceDest").value ||
-        !document.getElementById("newbalanceDest").value
+        !document.getElementById("oldbalanceDest").value
     ) {
-        alert("Please fill all fields.");
+        alert("Please fill in the transaction details.");
         return;
     }
 
@@ -1826,9 +2085,10 @@ async function checkFraud() {
         type: document.getElementById("type").value,
         amount: Number(document.getElementById("amount").value),
         oldbalanceOrg: Number(document.getElementById("oldbalanceOrg").value),
-        newbalanceOrig: Number(document.getElementById("newbalanceOrig").value),
         oldbalanceDest: Number(document.getElementById("oldbalanceDest").value),
-        newbalanceDest: Number(document.getElementById("newbalanceDest").value)
+        recency_hours: Number(document.getElementById("recency_hours").value || 24),
+        txn_count_24h: Number(document.getElementById("txn_count_24h").value || 1),
+        is_dest_new: Number(document.getElementById("is_dest_new").value || 0)
     };
 
     try {
@@ -1847,7 +2107,8 @@ async function checkFraud() {
             throw new Error(result.detail || "Prediction failed.");
         }
 
-        const probability = (result.fraud_probability * 100).toFixed(2);
+        const probability = result.fraud_probability * 100;
+        const probabilityStr = probability.toFixed(2);
 
         let color = "#22c55e";
 
@@ -1855,87 +2116,121 @@ async function checkFraud() {
         else if (result.risk_level === "HIGH") color = "#fb923c";
         else if (result.risk_level === "CRITICAL") color = "#ef4444";
 
+        // Semicircle gauge geometry (radius 90 -> half-circumference ~282.74)
+        const GAUGE_C = Math.PI * 90;
+
+        const shapFactors = result.shap_top_factors || [];
+        const maxAbsShap = Math.max(0.0001, ...shapFactors.map(f => Math.abs(f.shap_value)));
+
+        const shapRowsHtml = shapFactors.length
+            ? shapFactors.map(f => {
+                const isIncrease = f.direction === "increases risk";
+                const widthPct = (Math.abs(f.shap_value) / maxAbsShap) * 50; // half-axis max width
+                return `
+                <div class="shap-row">
+                    <div class="shap-label">${f.label || f.feature}</div>
+                    <div class="shap-axis">
+                        <div class="shap-center-line"></div>
+                        <div class="shap-bar ${isIncrease ? "increase" : "decrease"}"
+                             data-target="${widthPct}"
+                             style="width:0%;"></div>
+                    </div>
+                    <div class="shap-value" style="color:${isIncrease ? "#f97316" : "#22c55e"};">
+                        ${f.shap_value > 0 ? "+" : ""}${f.shap_value}
+                    </div>
+                </div>`;
+            }).join("")
+            : `<p style="color:#94a3b8;margin-top:10px;">No SHAP attribution returned for this prediction.</p>`;
+
+        const riskFactorsHtml = (result.top_risk_factors || []).length
+            ? (result.top_risk_factors || [])
+                .filter(f => f !== "No major fraud indicators detected")
+                .map(item => `<div class="chip"><span>⚠️</span><span>${item}</span></div>`).join("")
+                || `<div class="chip none"><span>✅</span><span>No rule-based indicators triggered</span></div>`
+            : `<div class="chip none"><span>✅</span><span>No rule-based indicators triggered</span></div>`;
+
         resultDiv.innerHTML = `
 
-        <h2 style="text-align:center;color:${color};margin-bottom:20px;">
-            ${result.is_fraud ? "🚨 Fraud Detected" : "✅ LEGITIMATE TRANSACTION"}
-        </h2>
+        <div class="card result-hero">
 
-        <div style="text-align:center;margin-bottom:20px;">
-            <span class="badge" style="background:${color};color:#0a0f1c;font-weight:700;">
-                ${result.risk_level}
-            </span>
-        </div>
-
-        <h3>Fraud Probability</h3>
-
-        <div class="progress">
-            <div
-                id="fraudBar"
-                class="progress-bar"
-                style="
-                width:0%;
-                background:${color};
-                ">
+            <div class="result-verdict" style="color:${color};">
+                ${result.is_fraud ? "🚨 Fraud Detected" : "✅ Legitimate Transaction"}
             </div>
+
+            <span class="badge" style="background:${color};color:#0a0f1c;font-weight:700;">
+                ${result.risk_level} RISK
+            </span>
+
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 220 130">
+                    <path class="gauge-track" d="M20,110 A90,90 0 0 1 200,110"></path>
+                    <path id="gaugeFill" class="gauge-fill"
+                        d="M20,110 A90,90 0 0 1 200,110"
+                        stroke="${color}"
+                        stroke-dasharray="${GAUGE_C} ${GAUGE_C}"
+                        stroke-dashoffset="${GAUGE_C}"></path>
+                    <text id="gaugePctText" x="110" y="95" text-anchor="middle"
+                        class="gauge-pct" font-size="34" fill="${color}">0%</text>
+                    <text x="110" y="118" text-anchor="middle"
+                        class="gauge-caption" font-size="12">fraud probability</text>
+                </svg>
+            </div>
+
+            ${!result.is_fraud ? `<p class="section-note" style="text-align:center;">Not flagged — a low score, not a guarantee of legitimacy.</p>` : ""}
+
         </div>
 
         <div class="grid">
 
             <div class="card">
 
-                <h3>📊 Prediction Details</h3>
+                <h3>📊 Prediction details</h3>
 
-                <br>
-
-                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-                    <span style="color:#94a3b8;">Fraud Probability</span>
-                    <strong style="color:${color};font-size:20px;">
-                        ${probability}%
-                    </strong>
+                <div class="metric-row">
+                    <span class="metric-label">Fraud probability</span>
+                    <span class="metric-value" style="color:${color};">${probabilityStr}%</span>
                 </div>
 
-                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-                    <span style="color:#94a3b8;">Confidence</span>
-                    <strong>${result.confidence ?? "—"}</strong>
+                <div class="metric-row">
+                    <span class="metric-label">Confidence</span>
+                    <span class="metric-value">${result.confidence ?? "—"}</span>
                 </div>
 
-                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-                    <span style="color:#94a3b8;">Risk Level</span>
-                    <strong style="color:${color};">
-                    ${result.risk_level}
-                    </strong>
+                <div class="metric-row">
+                    <span class="metric-label">Risk level</span>
+                    <span class="metric-value" style="color:${color};">${result.risk_level}</span>
                 </div>
 
-                <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-                    <span style="color:#94a3b8;">Decision Threshold</span>
-                    <strong>${result.threshold ?? "0.5"}</strong>
+                <div class="metric-row">
+                    <span class="metric-label">Decision threshold</span>
+                    <span class="metric-value">${result.threshold ?? "0.5"}</span>
                 </div>
 
-                <div style="display:flex;justify-content:space-between;">
-                    <span style="color:#94a3b8;">Detection Engine</span>
-                    <strong>XGBoost v1.0</strong>
+                <div class="metric-row">
+                    <span class="metric-label">Model</span>
+                    <span class="metric-value">${result.model ?? "XGBoost Fraud Classifier"}</span>
                 </div>
 
+                <div class="metric-row">
+                    <span class="metric-label">Model version</span>
+                    <span class="metric-value mono">${result.model_version ? result.model_version.slice(0,12) : "—"}</span>
                 </div>
+
+                <div class="metric-row">
+                    <span class="metric-label">Inference time</span>
+                    <span class="metric-value">${result.inference_ms != null ? result.inference_ms.toFixed(2) + " ms" : "—"}</span>
+                </div>
+
+            </div>
 
             <div class="card">
 
-                <h3>🚨 Detected Risk Indicators</h3>
+                <h3>🚩 Rule-based risk factors</h3>
+                <p class="section-note">Fast, deterministic sanity checks — separate from the model's own attribution below.</p>
 
-                ${
-                (result.top_risk_factors || [])
-                .map(item => `
-                    <div class="risk-factor">
-
-                        <span class="risk-icon">⚠️</span>
-
-                        <span>${item}</span>
-
-                    </div>
-                `)
-                .join("") || `<p style="color:#94a3b8;margin-top:12px;">No specific risk factors flagged.</p>`
-                }
+                <div class="chip-row">
+                    ${riskFactorsHtml}
+                </div>
 
             </div>
 
@@ -1943,7 +2238,23 @@ async function checkFraud() {
 
         <div class="card">
 
-            <h3>🤖 AI Investigation Summary</h3>
+            <h3>🧠 Why the model flagged this (SHAP attribution)</h3>
+            <p class="section-note">Each bar is this feature's real contribution to this specific prediction, from the trained model itself.</p>
+
+            <div id="shapRows">
+                ${shapRowsHtml}
+            </div>
+
+            <div class="shap-legend">
+                <span><span class="shap-legend-dot" style="background:#ef4444;"></span>increases risk</span>
+                <span><span class="shap-legend-dot" style="background:#22c55e;"></span>decreases risk</span>
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>🤖 Investigation summary</h3>
 
             <p style="margin-top:12px;line-height:1.8;">
 
@@ -1954,16 +2265,39 @@ async function checkFraud() {
         </div>
 
         `;
+
+        const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const animDelay = reduceMotion ? 0 : 60;
+
         setTimeout(() => {
 
-            const bar = document.getElementById("fraudBar");
-
-            if(bar){
-                bar.style.transition = "width 1.6s cubic-bezier(.22,1,.36,1)";
-                bar.style.width = probability + "%";
+            const gaugeFill = document.getElementById("gaugeFill");
+            if (gaugeFill) {
+                gaugeFill.style.strokeDashoffset = GAUGE_C * (1 - probability / 100);
             }
 
-        },150);
+            document.querySelectorAll("#shapRows .shap-bar").forEach(bar => {
+                bar.style.width = bar.getAttribute("data-target") + "%";
+            });
+
+            const pctText = document.getElementById("gaugePctText");
+            if (pctText) {
+                if (reduceMotion) {
+                    pctText.textContent = probabilityStr + "%";
+                } else {
+                    const duration = 1400;
+                    const start = performance.now();
+                    const step = (now) => {
+                        const t = Math.min(1, (now - start) / duration);
+                        const eased = 1 - Math.pow(1 - t, 3);
+                        pctText.textContent = (probability * eased).toFixed(1) + "%";
+                        if (t < 1) requestAnimationFrame(step);
+                    };
+                    requestAnimationFrame(step);
+                }
+            }
+
+        }, animDelay);
 
     btn.disabled=false;
 
