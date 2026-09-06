@@ -103,6 +103,30 @@ def test_predict_includes_real_shap_attribution():
         assert "label" in factor
         assert "shap_value" in factor
         assert factor["direction"] in ("increases risk", "decreases risk")
+        
+# ── GET /metrics/predictions ──────────────────────────────────────
+
+def test_metrics_predictions_reflects_traffic():
+    """
+    Regression test for PRD §5 "Structured logging & monitoring": every
+    /predict and /predict/batch call should be reflected in the running
+    aggregate counts returned by GET /metrics/predictions.
+    """
+    before = client.get("/metrics/predictions").json()
+    before_total = before["total_predictions"]
+
+    client.post("/predict", json=VALID_TXN)
+    client.post("/predict/batch", json={"transactions": [VALID_TXN, VALID_TXN]})
+
+    after = client.get("/metrics/predictions").json()
+    assert after["total_predictions"] == before_total + 3
+
+    for section in ("latency_ms", "fraud_probability_drift"):
+        assert section in after
+    assert after["latency_ms"]["window_size"] >= 3
+    # Every prediction just made used the same deployed model artifacts,
+    # so they should all be attributed to one model_version bucket.
+    assert sum(after["predictions_by_model_version"].values()) == after["total_predictions"]
 
 
 def test_predict_rejects_unknown_type_end_to_end():

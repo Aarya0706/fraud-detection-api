@@ -144,3 +144,89 @@ def test_train_appends_to_model_registry(isolated_model_dir, monkeypatch):
     # SEED -> versions may legitimately collide, but the field itself
     # must always be a non-empty content hash, never blank/placeholder.
     assert all(len(e["model_version"]) > 0 for e in entries)
+    
+
+
+# ── Threshold calibration by business cost (PRD §5) ────────────────
+
+def test_select_threshold_by_cost_prefers_higher_recall_when_fn_costlier():
+    """
+    With false negatives (missed fraud) priced far above false positives,
+    the cost-minimizing threshold should sit at or below the max-F1
+    threshold on this obviously-separable toy example -- i.e. it should
+    lean towards catching more fraud rather than fewer false alarms.
+    """
+    y_true = np.array([0] * 8 + [1] * 2)
+    # Fraud rows (index 8, 9) score higher; a couple of legit rows score
+    # in the middle to make the threshold choice actually matter.
+    probabilities = np.array([0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.4, 0.4, 0.9, 0.95])
+
+    threshold, cost, curve = train_module._select_threshold_by_cost(
+        y_true, probabilities, cost_fp=1, cost_fn=100
+    )
+
+    assert 0.0 < threshold <= 0.9
+    assert cost >= 0
+    assert len(curve) > 0
+    assert all({"threshold", "cost", "fp", "fn"} <= c.keys() for c in curve)
+
+
+def test_select_threshold_by_cost_prefers_higher_precision_when_fp_costlier():
+    """Flip the cost ratio: expensive false positives should push the
+    selected threshold higher than when false negatives dominate."""
+    y_true = np.array([0] * 8 + [1] * 2)
+    probabilities = np.array([0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.4, 0.4, 0.9, 0.95])
+
+    fn_expensive_threshold, _, _ = train_module._select_threshold_by_cost(
+        y_true, probabilities, cost_fp=1, cost_fn=100
+    )
+    fp_expensive_threshold, _, _ = train_module._select_threshold_by_cost(
+        y_true, probabilities, cost_fp=100, cost_fn=1
+    )
+
+    assert fp_expensive_threshold >= fn_expensive_threshold
+
+
+def test_train_records_both_thresholds_and_strategy(isolated_model_dir, monkeypatch):
+    """
+    Regression test for PRD §5 "Threshold calibration by business cost":
+    metrics.json and the registry should record the max-F1 threshold, the
+    cost-based threshold, and which strategy was actually selected --
+    not just a single unlabeled number, so the tradeoff stays visible.
+    """
+    df = _synthetic_paysim_df()
+    monkeypatch.setattr(train_module, "load_data", lambda: df)
+    monkeypatch.setattr(train_module, "THRESHOLD_STRATEGY", "f1")
+
+    train_module.train()
+
+    with open(train_module.METRICS_PATH) as f:
+        metrics = json.load(f)
+
+    assert metrics["threshold_strategy"] == "f1"
+    assert metrics["best_threshold"] == pytest.approx(metrics["f1_threshold"])
+    assert "cost_threshold" in metrics
+    assert "cost_threshold_assumptions" in metrics
+    for key in ("cost_false_positive", "cost_false_negative", "total_cost_at_cost_threshold"):
+        assert key in metrics["cost_threshold_assumptions"]
+
+    with open(train_module.REGISTRY_PATH) as f:
+        entry = json.loads(f.readline())
+    assert entry["threshold_strategy"] == "f1"
+    assert "f1_threshold" in entry and "cost_threshold" in entry
+
+
+def test_train_cost_strategy_selects_cost_threshold(isolated_model_dir, monkeypatch):
+    """When THRESHOLD_STRATEGY='cost', the saved best_threshold/threshold.pkl
+    should track the cost-based threshold, not the max-F1 one."""
+    df = _synthetic_paysim_df()
+    monkeypatch.setattr(train_module, "load_data", lambda: df)
+    monkeypatch.setattr(train_module, "THRESHOLD_STRATEGY", "cost")
+
+    train_module.train()
+
+    with open(train_module.METRICS_PATH) as f:
+        metrics = json.load(f)
+
+    assert metrics["threshold_strategy"] == "cost"
+    assert metrics["best_threshold"] == pytest.approx(metrics["cost_threshold"])

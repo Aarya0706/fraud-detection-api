@@ -52,6 +52,22 @@ REGISTRY_PATH = os.path.join(MODEL_DIR, "model_registry.jsonl")
 LEAKAGE_WATCH_FEATURES = {"log_oldbalanceOrg", "log_oldbalanceDest"}
 DOMINANCE_THRESHOLD = 0.40  # one feature owning >=40% of importance is suspicious
 
+# ── Threshold calibration by business cost (PRD §5) ─────────────────
+# Max-F1 picks a threshold that's statistically balanced, not one that
+# reflects what a false positive vs. a false negative actually *costs* a
+# real deployment. These defaults are illustrative placeholders -- a
+# real deployment would set them from actual $ figures (e.g. average
+# cost of a manual fraud review vs. average confirmed-fraud loss
+# amount). Override without a code change via env vars.
+COST_FALSE_POSITIVE = float(os.environ.get("COST_FALSE_POSITIVE", 5))
+COST_FALSE_NEGATIVE = float(os.environ.get("COST_FALSE_NEGATIVE", 100))
+# Which threshold actually gets saved to threshold.pkl and used live.
+# "f1" (default) preserves existing behavior; "cost" switches to the
+# cost-minimizing threshold below. Mirrors the API_KEY pattern elsewhere
+# in this project: the capability exists, but rollout is an explicit
+# opt-in decision, not a silent behavior change.
+THRESHOLD_STRATEGY = os.environ.get("THRESHOLD_STRATEGY", "f1").lower()
+
 
 def load_data():
     print("Loading PaySim dataset...")
@@ -76,6 +92,41 @@ def load_data():
     print(f"Fraud Rate: {df['isFraud'].mean()*100:.4f}%")
 
     return df
+
+def _select_threshold_by_cost(y_true, probabilities, cost_fp, cost_fn,
+                               candidate_thresholds=None):
+    """
+    Picks the threshold that minimizes total business cost
+    (false_positives * cost_fp + false_negatives * cost_fn), instead of
+    the max-F1 threshold's purely statistical optimum. Fraud false
+    negatives (a missed fraud) are typically far costlier than false
+    positives (a legitimate transaction flagged for review), so
+    COST_FALSE_NEGATIVE defaults higher than COST_FALSE_POSITIVE --
+    tune both to whatever a real deployment's actual costs are.
+
+    Returns (best_threshold, best_cost, full_cost_curve) so the caller
+    can both use the selected threshold and inspect/plot the tradeoff.
+    """
+    if candidate_thresholds is None:
+        candidate_thresholds = np.linspace(0.01, 0.99, 99)
+
+    y_true = np.asarray(y_true)
+    best_threshold = float(candidate_thresholds[0])
+    best_cost = float("inf")
+    cost_curve = []
+
+    for t in candidate_thresholds:
+        preds = (probabilities >= t).astype(int)
+        fp = int(np.sum((preds == 1) & (y_true == 0)))
+        fn = int(np.sum((preds == 0) & (y_true == 1)))
+        cost = fp * cost_fp + fn * cost_fn
+        cost_curve.append({"threshold": float(t), "cost": float(cost), "fp": fp, "fn": fn})
+        if cost < best_cost:
+            best_cost = float(cost)
+            best_threshold = float(t)
+
+    return best_threshold, best_cost, cost_curve
+
 
 def train():
     df = load_data()
@@ -146,10 +197,24 @@ def train():
     )
 
     best_index = np.argmax(f1_scores)
-    best_threshold = thresholds[best_index]
+    f1_threshold = float(thresholds[best_index])
 
-    print(f"\nBest Threshold: {best_threshold:.3f}")
+    cost_threshold, cost_value, _cost_curve = _select_threshold_by_cost(
+        y_test, probabilities, COST_FALSE_POSITIVE, COST_FALSE_NEGATIVE
+    )
 
+    selected_threshold = f1_threshold if THRESHOLD_STRATEGY != "cost" else cost_threshold
+
+    print("\nThreshold comparison:")
+    print(f"  Max-F1 threshold   : {f1_threshold:.3f}")
+    print(
+        f"  Cost-based threshold: {cost_threshold:.3f}  "
+        f"(assumes cost_fp={COST_FALSE_POSITIVE}, cost_fn={COST_FALSE_NEGATIVE}, "
+        f"total cost={cost_value:.0f})"
+    )
+    print(f"  Selected strategy  : '{THRESHOLD_STRATEGY}' -> using {selected_threshold:.3f}")
+
+    best_threshold = selected_threshold
     predictions = (probabilities >= best_threshold).astype(int)
 
     roc_auc = roc_auc_score(y_test, probabilities)
@@ -185,6 +250,10 @@ def train():
         report=report,
         confusion=cm,
         best_threshold=best_threshold,
+        f1_threshold=f1_threshold,
+        cost_threshold=cost_threshold,
+        cost_value=cost_value,
+        threshold_strategy=THRESHOLD_STRATEGY,
         n_train_rows=len(X_train),
         n_test_rows=len(X_test),
     )
@@ -195,6 +264,9 @@ def train():
         roc_auc=roc_auc,
         pr_auc=pr_auc,
         best_threshold=best_threshold,
+        f1_threshold=f1_threshold,
+        cost_threshold=cost_threshold,
+        threshold_strategy=THRESHOLD_STRATEGY,
         n_train_rows=len(X_train),
         n_test_rows=len(X_test),
     )
@@ -205,12 +277,17 @@ def train():
     print(f"Model version: {model_version} (see {REGISTRY_PATH})")
     
 def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
+                  f1_threshold, cost_threshold, cost_value, threshold_strategy,
                   n_train_rows, n_test_rows):
     """
     Persists the metrics train.py already prints to stdout, so there's a
     single source of truth for "what's the real accuracy now" instead of
     numbers only living in a terminal scrollback (see PRD 3.2: the README's
     ROC-AUC 0.9997 badge went stale exactly this way after the leakage fix).
+
+    Records both the max-F1 and cost-based thresholds (and which one was
+    actually selected) so a later reviewer can see the tradeoff instead of
+    just the winner -- see PRD §5 "Threshold calibration by business cost".
     """
     fraud_report = report.get("1", report.get("1.0", {}))
 
@@ -223,6 +300,14 @@ def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
         "n_train_rows": int(n_train_rows),
         "n_test_rows": int(n_test_rows),
         "best_threshold": float(best_threshold),
+        "threshold_strategy": threshold_strategy,
+        "f1_threshold": float(f1_threshold),
+        "cost_threshold": float(cost_threshold),
+        "cost_threshold_assumptions": {
+            "cost_false_positive": COST_FALSE_POSITIVE,
+            "cost_false_negative": COST_FALSE_NEGATIVE,
+            "total_cost_at_cost_threshold": float(cost_value),
+        },
         "roc_auc": float(roc_auc),
         "pr_auc": float(pr_auc),
         "precision_fraud_class": fraud_report.get("precision"),
@@ -249,6 +334,7 @@ def _compute_model_version(model_path):
 
 
 def append_to_registry(model_version, roc_auc, pr_auc, best_threshold,
+                        f1_threshold, cost_threshold, threshold_strategy,
                         n_train_rows, n_test_rows):
     """
     Appends one line per training run to models/model_registry.jsonl --
@@ -269,6 +355,9 @@ def append_to_registry(model_version, roc_auc, pr_auc, best_threshold,
         "roc_auc": float(roc_auc),
         "pr_auc": float(pr_auc),
         "best_threshold": float(best_threshold),
+        "threshold_strategy": threshold_strategy,
+        "f1_threshold": float(f1_threshold),
+        "cost_threshold": float(cost_threshold),
         "n_train_rows": int(n_train_rows),
         "n_test_rows": int(n_test_rows),
     }
