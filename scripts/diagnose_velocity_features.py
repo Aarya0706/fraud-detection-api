@@ -48,9 +48,9 @@ def _describe_variance(df, col):
     print(f"most common single value covers {top_value_share:.2%} of rows "
           f"(value = {df[col].value_counts().idxmax()})")
     if top_value_share > 0.95:
-        print(f"^ DEGENERATE: >95% of rows share one value -- a tree model "
-              f"has almost nothing to split on here, regardless of any true "
-              f"relationship with fraud.")
+        print("^ DEGENERATE: >95% of rows share one value -- a tree model "
+              "has almost nothing to split on here, regardless of any true "
+              "relationship with fraud.")
 
 
 def _compare_by_label(df, col):
@@ -59,9 +59,9 @@ def _compare_by_label(df, col):
     corr = df[col].corr(df["isFraud"])
     print(f"correlation with isFraud: {corr:.4f}")
     if abs(corr) < 0.02:
-        print(f"^ Essentially no linear relationship with the label in this "
-              f"dataset -- consistent with the near-zero importance seen "
-              f"in training.")
+        print("^ Essentially no linear relationship with the label in this "
+              "dataset -- consistent with the near-zero importance seen "
+              "in training.")
 
 
 def main():
