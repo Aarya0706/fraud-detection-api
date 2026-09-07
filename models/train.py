@@ -22,6 +22,7 @@ from sklearn.metrics import (
     confusion_matrix,
     roc_auc_score,
     average_precision_score,
+    roc_curve,
 )
 
 from imblearn.over_sampling import SMOTE
@@ -128,6 +129,22 @@ def _select_threshold_by_cost(y_true, probabilities, cost_fp, cost_fn,
     return best_threshold, best_cost, cost_curve
 
 
+def _thin_curve(*arrays, max_points=60):
+    """
+    Downsamples one or more equal-length curve arrays to at most
+    max_points, keeping the first and last point, so metrics.json stays
+    small enough to serve over /model/info without needing a dedicated
+    endpoint or pagination. Purely a display-resolution reduction --
+    doesn't change AUC, which is computed separately on the full curve.
+    """
+    n = len(arrays[0])
+    if n <= max_points:
+        idx = np.arange(n)
+    else:
+        idx = np.unique(np.linspace(0, n - 1, max_points).astype(int))
+    return [np.asarray(a)[idx].tolist() for a in arrays]
+
+
 def train():
     df = load_data()
 
@@ -192,6 +209,8 @@ def train():
         probabilities
     )
 
+    fpr, tpr, _roc_thresholds = roc_curve(y_test, probabilities)
+
     f1_scores = (2 * precision[:-1] * recall[:-1]) / (
         precision[:-1] + recall[:-1] + 1e-8
     )
@@ -244,6 +263,18 @@ def train():
     joblib.dump(best_threshold,
             os.path.join(MODEL_DIR, "threshold.pkl"))
 
+    thinned_precision, thinned_recall = _thin_curve(precision[:-1], recall[:-1])
+    thinned_fpr, thinned_tpr = _thin_curve(fpr, tpr)
+
+    feature_importance_list = sorted(
+        (
+            {"feature": f, "importance": float(imp)}
+            for f, imp in zip(FEATURE_COLS, model.feature_importances_)
+        ),
+        key=lambda row: row["importance"],
+        reverse=True,
+    )
+
     save_metrics(
         roc_auc=roc_auc,
         pr_auc=pr_auc,
@@ -256,6 +287,9 @@ def train():
         threshold_strategy=THRESHOLD_STRATEGY,
         n_train_rows=len(X_train),
         n_test_rows=len(X_test),
+        roc_curve_points={"fpr": thinned_fpr, "tpr": thinned_tpr},
+        pr_curve_points={"precision": thinned_precision, "recall": thinned_recall},
+        feature_importance=feature_importance_list,
     )
 
     model_version = _compute_model_version(MODEL_PATH)
@@ -278,7 +312,8 @@ def train():
     
 def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
                   f1_threshold, cost_threshold, cost_value, threshold_strategy,
-                  n_train_rows, n_test_rows):
+                  n_train_rows, n_test_rows, roc_curve_points=None,
+                  pr_curve_points=None, feature_importance=None):
     """
     Persists the metrics train.py already prints to stdout, so there's a
     single source of truth for "what's the real accuracy now" instead of
@@ -288,6 +323,11 @@ def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
     Records both the max-F1 and cost-based thresholds (and which one was
     actually selected) so a later reviewer can see the tradeoff instead of
     just the winner -- see PRD §5 "Threshold calibration by business cost".
+
+    roc_curve_points / pr_curve_points / feature_importance are optional
+    so older callers (and any code depending on this signature) keep
+    working -- added purely so the Insights tab can render real analytics
+    from this same file via GET /model/info, with no new endpoint.
     """
     fraud_report = report.get("1", report.get("1.0", {}))
 
@@ -315,6 +355,9 @@ def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
         "f1_fraud_class": fraud_report.get("f1-score"),
         "accuracy": report.get("accuracy"),
         "confusion_matrix": confusion.tolist(),
+        "roc_curve": roc_curve_points,
+        "pr_curve": pr_curve_points,
+        "feature_importance": feature_importance,
     }
 
     with open(METRICS_PATH, "w") as f:

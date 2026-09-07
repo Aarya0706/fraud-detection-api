@@ -1318,6 +1318,23 @@ filter:drop-shadow(0 0 9px #fbbf24);
     box-shadow:0 0 8px rgba(239,68,68,.8);
 }
 
+.ms-dot.waking{
+    background:#facc15;
+    box-shadow:0 0 8px rgba(250,204,21,.8);
+    animation:msWakingPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes msWakingPulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.4; }
+}
+
+@media(prefers-reduced-motion:reduce){
+    .ms-dot.waking{
+        animation:none;
+    }
+}
+
 /* ================= PRESETS ================= */
 
 .preset-row{
@@ -1497,6 +1514,214 @@ filter:drop-shadow(0 0 9px #fbbf24);
     font-size:14.5px;
     font-weight:600;
     color:#e2e8f0;
+}
+
+/* ================= INSIGHTS TAB ================= */
+
+.insights-stat-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+}
+
+@media(max-width:760px){
+    .insights-stat-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+.insight-stat{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:14px;
+    padding:16px;
+    text-align:center;
+}
+
+.insight-stat .insight-stat-value{
+    font-size:24px;
+    font-weight:800;
+    font-family:'Sora',sans-serif;
+}
+
+.insight-stat .insight-stat-label{
+    font-size:12px;
+    color:#94a3b8;
+    margin-top:4px;
+}
+
+.cm-grid{
+    display:grid;
+    grid-template-columns:auto 1fr 1fr;
+    gap:6px;
+    max-width:460px;
+    margin:16px auto 6px;
+    align-items:stretch;
+}
+
+.cm-axis-label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    color:#5b6b89;
+    text-align:center;
+    padding:6px;
+}
+
+.cm-cell{
+    border-radius:12px;
+    padding:16px 10px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.cm-cell .cm-count{
+    font-size:22px;
+    font-weight:800;
+    font-family:'Sora',sans-serif;
+}
+
+.cm-cell .cm-tag{
+    font-size:11px;
+    color:#94a3b8;
+    margin-top:2px;
+}
+
+.cm-cell.correct{
+    background:rgba(34,197,94,.1);
+    border-color:rgba(34,197,94,.3);
+}
+
+.cm-cell.correct .cm-count{
+    color:#22c55e;
+}
+
+.cm-cell.wrong{
+    background:rgba(239,68,68,.1);
+    border-color:rgba(239,68,68,.3);
+}
+
+.cm-cell.wrong .cm-count{
+    color:#ef4444;
+}
+
+.fi-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:12px;
+}
+
+.fi-label{
+    flex:0 0 34%;
+    font-size:13px;
+    color:#cbd5e1;
+    text-align:right;
+    font-family:monospace;
+}
+
+.fi-track{
+    flex:1;
+    height:18px;
+    background:rgba(255,255,255,.04);
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.fi-fill{
+    height:100%;
+    border-radius:6px;
+    background:linear-gradient(90deg,#3b82f6,#60a5fa);
+}
+
+.fi-value{
+    flex:0 0 56px;
+    font-size:12px;
+    font-family:monospace;
+    color:#60a5fa;
+}
+
+.curve-svg{
+    width:100%;
+    max-width:340px;
+    height:auto;
+    display:block;
+    margin:10px auto 0;
+}
+
+.curve-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+@media(max-width:760px){
+    .curve-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+.curve-unavailable{
+    text-align:center;
+    color:#5b6b89;
+    font-size:13px;
+    padding:30px 10px;
+    border:1px dashed rgba(255,255,255,.12);
+    border-radius:12px;
+}
+
+/* ================= ENGINEERING NOTES TAB ================= */
+
+.eng-note{
+    border-left:3px solid #60a5fa;
+    padding:4px 0 4px 18px;
+    margin-bottom:26px;
+}
+
+.eng-note:last-child{
+    margin-bottom:0;
+}
+
+.eng-note-title{
+    font-size:16px;
+    font-weight:700;
+    color:#e2e8f0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.eng-note-body{
+    color:#94a3b8;
+    line-height:1.8;
+    margin-top:8px;
+    font-size:14.5px;
+}
+
+.eng-note-body code{
+    background:rgba(255,255,255,.06);
+    padding:2px 6px;
+    border-radius:5px;
+    font-size:13px;
+    color:#60a5fa;
+}
+
+.eng-stat-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:12px;
+}
+
+.eng-stat-pill{
+    background:rgba(96,165,250,.08);
+    border:1px solid rgba(96,165,250,.25);
+    color:#93c5fd;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12.5px;
+    font-family:monospace;
 }
 
 </style>
@@ -1745,6 +1970,10 @@ PaySim transactions.
 📖 About
 </button>
 
+<button class="tab-btn" onclick="showTab('engineering', this)">
+🛠 Engineering Notes
+</button>
+
 <button class="tab-btn" onclick="showTab('developer', this)">
 👨‍💻 Developer
 </button>
@@ -1926,75 +2155,15 @@ Account &amp; behavior signals
 <div id="insights" class="tab-content" style="display:none;">
 
     <div class="card">
-
         <h2>📊 Model Insights</h2>
+        <p class="section-note" id="insightsMeta">Loading live metrics from the API…</p>
+    </div>
 
-        <br>
-
-        <div class="insight-grid">
-
-            <div class="card">
-
-                <h3>🧠 Algorithm</h3>
-
-                <h2 style="color:#60a5fa;">XGBoost</h2>
-
-                <p>Gradient Boosting Classifier</p>
-
-            </div>
-
-            <div class="card">
-
-                <h3>📊 Dataset</h3>
-
-                <h2 style="color:#fbbf24;">6.3M+</h2>
-
-                <p>PaySim Transactions</p>
-
-            </div>
-
-            <div class="card">
-
-                <h3>🎯 Precision</h3>
-
-                <h2 style="color:#22c55e;">99%</h2>
-
-                <p>Fraud Precision</p>
-
-            </div>
-
-            <div class="card">
-
-                <h3>⚡ Recall</h3>
-
-                <h2 class="metric" style="color:#60a5fa;">99%</h2>
-
-                <p>Fraud Recall</p>
-
-            </div>
-
-            <div class="card">
-
-                <h3>📈 ROC-AUC</h3>
-
-                <h2 style="color:#fbbf24;">0.9997</h2>
-
-                <p>Model Performance</p>
-
-            </div>
-
-            <div class="card">
-
-                <h3>🔧 Features</h3>
-
-                <h2 style="color:#60a5fa;">11</h2>
-
-                <p>Engineered Features</p>
-
-            </div>
-
+    <div id="insightsBody">
+        <div class="card empty-state">
+            <div class="empty-state-icon">📊</div>
+            <p>Fetching real analytics from <code>GET /model/info</code>…</p>
         </div>
-
     </div>
 
 </div>
@@ -2069,7 +2238,7 @@ Account &amp; behavior signals
 
             <div class="card" style="margin-top:0;">
                 <h3 style="color:#60a5fa;">2</h3>
-                <p style="margin-top:6px;">11 features engineered (log-scaled balances, drain &amp; anomaly flags, ratios)</p>
+                <p style="margin-top:6px;">10 features engineered (log-scaled balances, drain &amp; anomaly flags, ratios)</p>
             </div>
 
             <div class="card" style="margin-top:0;">
@@ -2111,9 +2280,123 @@ Account &amp; behavior signals
 
         <ul style="margin-top:10px;color:#cbd5e1;">
             <li>Validate against a real-world fraud dataset (e.g. IEEE-CIS)</li>
-            <li>Re-check the decision threshold if the production class balance shifts — a 0.5 cutoff currently outperforms the F1-optimal precision-recall threshold on this dataset, but that can change with different data</li>
-            <li>Add authentication and rate limiting before any real deployment</li>
+            <li>The live decision threshold is 0.984 (F1-optimal on this dataset), not a naive 0.5 cutoff — a cost-weighted alternative (~0.66, under assumed false-positive/false-negative costs) is also computed on every training run but not yet deployed; revisit if the production class balance or cost assumptions shift</li>
+            <li>Rate limiting and optional API-key auth are already in place — decide when/whether to turn key auth on for the public demo</li>
         </ul>
+
+    </div>
+
+</div>
+
+<div id="engineering" class="tab-content" style="display:none;">
+
+    <div class="card">
+
+        <h2>🛠 Engineering Notes</h2>
+        <p class="section-note" style="margin-top:8px;">
+            The debugging and design decisions behind this model — not just the finished pipeline.
+        </p>
+
+        <div class="eng-note" style="margin-top:24px;">
+            <div class="eng-note-title">🕳 The label leak that produced a 0.9999 AUC</div>
+            <div class="eng-note-body">
+                The first version of this model scored a suspicious <code>0.9999</code> ROC-AUC.
+                The cause: PaySim's fraud rows always drain the origin account to exactly zero,
+                and the original feature set included <code>newbalanceOrig</code> /
+                <code>newbalanceDest</code> — the account balances <em>after</em> the transaction.
+                The model wasn't learning fraud patterns, it was reading the answer off
+                post-transaction state that wouldn't exist at approval time in a real system.
+                Both fields were dropped entirely.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">🔁 Replacing a leaky feature with a prospective one</div>
+            <div class="eng-note-body">
+                Rather than lose the signal outright, <code>would_drain_orig</code> replaced the
+                leaky balance fields — computed as <code>oldbalanceOrg − amount</code>, which is
+                known <em>before</em> a transaction is approved. Same underlying idea
+                (does this transaction empty the sender's account), none of the leakage.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">🔍 Verifying the replacement wasn't a subtler leak</div>
+            <div class="eng-note-body">
+                <code>would_drain_orig</code> alone ended up carrying 57% of feature importance —
+                above the pipeline's own automated 40% dominance warning. Rather than trust that,
+                a verification script cross-tabbed it against the real outcome on the full dataset:
+                <div class="eng-stat-row">
+                    <span class="eng-stat-pill">fraud rate @ drain=1: 0.404%</span>
+                    <span class="eng-stat-pill">fraud rate @ drain=0: 0.0044%</span>
+                    <span class="eng-stat-pill">97.7% of fraud has drain=1</span>
+                    <span class="eng-stat-pill">only 0.4% of drain=1 rows are fraud</span>
+                </div>
+                High recall, low precision, no leak: draining the account is common among
+                legitimate large transfers too, so it isn't a near-deterministic label proxy the
+                way the original leak was — it's a strong, honest risk signal on a very rare
+                event, not a shortcut. That's why 57% is trusted rather than treated as a red flag.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">🧾 Real metrics, not a hardcoded badge</div>
+            <div class="eng-note-body">
+                The README used to carry a static <code>0.9997 ROC-AUC</code> figure that quietly
+                went stale the moment the leaky features were removed. <code>train.py</code> now
+                writes real metrics to <code>models/metrics.json</code> on every run — precision,
+                recall, F1, the confusion matrix, feature importance, even the ROC/PR curve points
+                — and <code>GET /model/info</code> serves that file directly, so what's shown here
+                can't drift out of sync with what's actually deployed.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">⚖️ Two explanations, kept deliberately separate</div>
+            <div class="eng-note-body">
+                Every prediction carries both a rule-based summary <em>and</em> real per-prediction
+                SHAP attribution (via XGBoost's native <code>pred_contribs</code>, no extra
+                dependency needed). They're shown as distinct panels on purpose: the rules are
+                fast, deterministic sanity checks; SHAP is what the model itself actually weighed
+                for that specific transaction. Collapsing them into one explanation would hide
+                which kind of "why" you're looking at.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">📏 One threshold, two candidates</div>
+            <div class="eng-note-body">
+                The deployed decision threshold is <code>0.984</code>, chosen by max-F1 on the
+                precision-recall curve. A cost-weighted alternative (<code>~0.66</code>, under an
+                assumed cost of 5 for a false positive and 100 for a missed fraud) is computed on
+                every training run too, but isn't live yet — swapping between the two is a
+                one-line config change (<code>THRESHOLD_STRATEGY</code>), deliberately left as an
+                explicit decision rather than silently auto-selected.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">🔖 Model versioning without a database</div>
+            <div class="eng-note-body">
+                Every prediction reports a content-hashed <code>model_version</code> — a short
+                SHA-256 of the deployed model file — so it always reflects exactly which weights
+                produced that score, and can't silently drift out of sync the way a manually
+                bumped version string could. An append-only <code>model_registry.jsonl</code>
+                keeps the last several training runs (version, metrics, row counts, timestamp),
+                giving basic rollback / A-B comparison without standing up a database.
+            </div>
+        </div>
+
+        <div class="eng-note">
+            <div class="eng-note-title">☁️ Railway → Render</div>
+            <div class="eng-note-body">
+                The backend originally deployed to Railway; after the trial period expired it was
+                migrated to Render's free tier. The tradeoff: Render's free instances spin down
+                after 15 minutes idle, so the first request after a lull takes ~30–50s to wake up
+                — documented in the README and reflected in this UI's own status panel (which
+                retries with backoff rather than reporting "down" during that window).
+            </div>
+        </div>
 
     </div>
 
@@ -2290,31 +2573,49 @@ async function fetchModelStatus(){
     const statusText = document.getElementById("msStatusText");
     const apiBadge = document.getElementById("apiStatusBadge");
 
-    try {
-        const [healthRes, infoRes] = await Promise.all([
-            fetch(`${API_BASE}/health`),
-            fetch(`${API_BASE}/model/info`)
-        ]);
+    const MAX_ATTEMPTS = 8;
+    const RETRY_DELAY_MS = 6000;
 
-        if (!healthRes.ok || !infoRes.ok) throw new Error("bad status");
+    const setState = (state, text, badgeText) => {
+        dot.classList.remove("online", "offline", "waking");
+        dot.classList.add(state);
+        statusText.textContent = text;
+        apiBadge.textContent = badgeText;
+    };
 
-        const info = await infoRes.json();
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 
-        dot.classList.add("online");
-        statusText.textContent = "Model active";
-        apiBadge.textContent = "🟢 API online";
+        try {
+            const [healthRes, infoRes] = await Promise.all([
+                fetch(`${API_BASE}/health`),
+                fetch(`${API_BASE}/model/info`)
+            ]);
 
-        document.getElementById("msFeatures").textContent = info.features ?? "—";
-        document.getElementById("msVersion").textContent = info.model_version ? info.model_version.slice(0,12) : "—";
+            if (!healthRes.ok || !infoRes.ok) throw new Error("bad status");
 
-        if (info.metrics && info.metrics.threshold != null) {
-            document.getElementById("msThreshold").textContent = `${(info.metrics.threshold * 100).toFixed(0)}%`;
+            const info = await infoRes.json();
+
+            setState("online", "Model active", "🟢 API online");
+
+            document.getElementById("msFeatures").textContent = info.features ?? "—";
+            document.getElementById("msVersion").textContent = info.model_version ? info.model_version.slice(0,12) : "—";
+
+            if (info.metrics && info.metrics.threshold != null) {
+                document.getElementById("msThreshold").textContent = `${(info.metrics.threshold * 100).toFixed(0)}%`;
+            }
+
+            return;
+
+        } catch (err) {
+
+            if (attempt < MAX_ATTEMPTS) {
+                setState("waking", "Waking up API — this can take up to a minute on the free tier…", "🟡 API waking up…");
+                await new Promise(r => setTimeout(r, RETRY_DELAY_MS));
+            } else {
+                setState("offline", "Model unreachable — the backend may be down", "🔴 API unreachable");
+            }
+
         }
-
-    } catch (err) {
-        dot.classList.add("offline");
-        statusText.textContent = "Model unreachable (cold start or offline)";
-        apiBadge.textContent = "🟡 API waking up…";
     }
 }
 
@@ -2705,6 +3006,170 @@ function showTab(tabId, button){
     // Highlight selected button
     button.classList.add("active");
 
+    if (tabId === "insights") loadInsights();
+
+}
+
+// ================= INSIGHTS TAB =================
+// Fetched lazily (only when the tab is opened) and cached for the rest
+// of the session — GET /model/info already serves the whole metrics.json,
+// so no new endpoint is needed for any of this.
+
+let insightsLoaded = false;
+
+const FALLBACK_FEATURE_IMPORTANCE = [
+    { feature: "would_drain_orig",     importance: 0.5732621 },
+    { feature: "amount_ratio_orig",    importance: 0.32706016 },
+    { feature: "log_oldbalanceOrg",    importance: 0.046139836 },
+    { feature: "type_enc",             importance: 0.018660944 },
+    { feature: "log_amount",           importance: 0.015885409 },
+    { feature: "dest_balance_anomaly", importance: 0.00907534 },
+    { feature: "is_dest_new",          importance: 0.008962766 },
+    { feature: "log_oldbalanceDest",   importance: 0.0008682208 },
+    { feature: "recency_hours",        importance: 0.0000852 },
+    { feature: "txn_count_24h",        importance: 0.0 }
+];
+
+function buildLineChartSVG(points, opts){
+    const W = 300, H = 200, PAD = 32;
+    const plotW = W - PAD * 2, plotH = H - PAD * 2;
+
+    const toX = v => PAD + v * plotW;
+    const toY = v => (H - PAD) - v * plotH;
+
+    const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${toX(p.x).toFixed(1)},${toY(p.y).toFixed(1)}`).join(" ");
+
+    return `
+    <svg class="curve-svg" viewBox="0 0 ${W} ${H}">
+        <line x1="${PAD}" y1="${H-PAD}" x2="${W-PAD}" y2="${H-PAD}" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+        <line x1="${PAD}" y1="${PAD}" x2="${PAD}" y2="${H-PAD}" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+        ${opts.diagonal ? `<line x1="${toX(0)}" y1="${toY(0)}" x2="${toX(1)}" y2="${toY(1)}" stroke="rgba(255,255,255,.12)" stroke-width="1" stroke-dasharray="4 4"/>` : ""}
+        <path d="${path}" fill="none" stroke="${opts.color || "#60a5fa"}" stroke-width="2.5" stroke-linejoin="round"/>
+        <text x="${W/2}" y="${H-6}" text-anchor="middle" font-size="10" fill="#5b6b89">${opts.xLabel}</text>
+        <text x="10" y="${H/2}" text-anchor="middle" font-size="10" fill="#5b6b89" transform="rotate(-90 10 ${H/2})">${opts.yLabel}</text>
+    </svg>`;
+}
+
+async function loadInsights(){
+
+    if (insightsLoaded) return;
+
+    const body = document.getElementById("insightsBody");
+    const meta = document.getElementById("insightsMeta");
+
+    try {
+        const res = await fetch(`${API_BASE}/model/info`);
+        if (!res.ok) throw new Error("bad status");
+        const info = await res.json();
+        const m = info.metrics || {};
+
+        insightsLoaded = true;
+
+        const trained = m.trained_at_utc ? new Date(m.trained_at_utc).toLocaleDateString() : "unknown date";
+        const totalRows = (m.n_train_rows || 0) + (m.n_test_rows || 0);
+        meta.textContent = info.model_version
+            ? `Model ${info.model_version.slice(0,12)} · trained ${trained} · ${totalRows.toLocaleString()} rows`
+            : "No trained model metrics available yet.";
+
+        const stats = [
+            { label: "ROC-AUC", value: m.roc_auc != null ? m.roc_auc.toFixed(4) : "—", color: "#fbbf24" },
+            { label: "PR-AUC", value: m.pr_auc != null ? m.pr_auc.toFixed(4) : "—", color: "#fbbf24" },
+            { label: "Precision (fraud)", value: m.precision_fraud_class != null ? (m.precision_fraud_class*100).toFixed(2)+"%" : "—", color: "#22c55e" },
+            { label: "Recall (fraud)", value: m.recall_fraud_class != null ? (m.recall_fraud_class*100).toFixed(2)+"%" : "—", color: "#60a5fa" },
+            { label: "F1 (fraud)", value: m.f1_fraud_class != null ? m.f1_fraud_class.toFixed(4) : "—", color: "#60a5fa" },
+            { label: "Accuracy", value: m.accuracy != null ? (m.accuracy*100).toFixed(2)+"%" : "—", color: "#22c55e" },
+            { label: "Features", value: m.n_features ?? info.features ?? "—", color: "#60a5fa" },
+            { label: "Decision threshold", value: m.best_threshold != null ? m.best_threshold.toFixed(3) : "—", color: "#fbbf24" }
+        ];
+
+        const statHtml = stats.map(s => `
+            <div class="insight-stat">
+                <div class="insight-stat-value" style="color:${s.color};">${s.value}</div>
+                <div class="insight-stat-label">${s.label}</div>
+            </div>`).join("");
+
+        let cmHtml = "";
+        if (Array.isArray(m.confusion_matrix)) {
+            const [[tn, fp],[fn, tp]] = m.confusion_matrix;
+            cmHtml = `
+            <div class="card">
+                <h3>🧮 Confusion matrix</h3>
+                <p class="section-note">On the held-out test set, at the deployed threshold.</p>
+                <div class="cm-grid">
+                    <div></div>
+                    <div class="cm-axis-label">Predicted legit</div>
+                    <div class="cm-axis-label">Predicted fraud</div>
+                    <div class="cm-axis-label">Actual legit</div>
+                    <div class="cm-cell correct"><div class="cm-count">${tn.toLocaleString()}</div><div class="cm-tag">True negative</div></div>
+                    <div class="cm-cell wrong"><div class="cm-count">${fp.toLocaleString()}</div><div class="cm-tag">False positive</div></div>
+                    <div class="cm-axis-label">Actual fraud</div>
+                    <div class="cm-cell wrong"><div class="cm-count">${fn.toLocaleString()}</div><div class="cm-tag">False negative</div></div>
+                    <div class="cm-cell correct"><div class="cm-count">${tp.toLocaleString()}</div><div class="cm-tag">True positive</div></div>
+                </div>
+            </div>`;
+        }
+
+        const fiSource = Array.isArray(m.feature_importance) && m.feature_importance.length ? m.feature_importance : FALLBACK_FEATURE_IMPORTANCE;
+        const fiIsLive = Array.isArray(m.feature_importance) && m.feature_importance.length;
+        const maxFi = Math.max(...fiSource.map(f => f.importance), 0.0001);
+
+        const fiHtml = `
+        <div class="card">
+            <h3>🔧 Feature importance</h3>
+            <p class="section-note">${fiIsLive ? "From the currently deployed model's training run." : "From the repo's last committed training run — will switch to live once metrics.json includes feature_importance."}</p>
+            ${fiSource.map(f => `
+                <div class="fi-row">
+                    <div class="fi-label">${f.feature}</div>
+                    <div class="fi-track"><div class="fi-fill" style="width:${(f.importance/maxFi*100).toFixed(1)}%;"></div></div>
+                    <div class="fi-value">${(f.importance*100).toFixed(1)}%</div>
+                </div>`).join("")}
+        </div>`;
+
+        let curvesHtml;
+        if (m.roc_curve && m.pr_curve) {
+            const rocPoints = m.roc_curve.fpr.map((x, i) => ({ x, y: m.roc_curve.tpr[i] }));
+            const prPoints = m.pr_curve.recall.map((x, i) => ({ x, y: m.pr_curve.precision[i] })).sort((a,b) => a.x - b.x);
+
+            curvesHtml = `
+            <div class="card">
+                <h3>📈 ROC &amp; Precision-Recall curves</h3>
+                <p class="section-note">Real curve points from the last training run — not illustrative.</p>
+                <div class="curve-grid">
+                    <div>
+                        ${buildLineChartSVG(rocPoints, { xLabel:"False positive rate", yLabel:"True positive rate", color:"#60a5fa", diagonal:true })}
+                        <p class="section-note" style="text-align:center;">ROC curve</p>
+                    </div>
+                    <div>
+                        ${buildLineChartSVG(prPoints, { xLabel:"Recall", yLabel:"Precision", color:"#22c55e", diagonal:false })}
+                        <p class="section-note" style="text-align:center;">Precision-Recall curve</p>
+                    </div>
+                </div>
+            </div>`;
+        } else {
+            curvesHtml = `
+            <div class="card">
+                <h3>📈 ROC &amp; Precision-Recall curves</h3>
+                <div class="curve-unavailable">
+                    Curve point data isn't in this deployment's <code>metrics.json</code> yet.<br>
+                    Rerun <code>python -m models.train</code> with the latest <code>train.py</code> to populate it — this card will render real curves automatically once it's there.
+                </div>
+            </div>`;
+        }
+
+        body.innerHTML = `
+            <div class="card"><div class="insights-stat-grid">${statHtml}</div></div>
+            <div class="grid">${cmHtml}${fiHtml}</div>
+            ${curvesHtml}
+        `;
+
+    } catch (err) {
+        body.innerHTML = `
+        <div class="card error-state">
+            <h3>❌ Couldn't load model insights</h3>
+            <p>The API may still be waking up from a cold start. Try again in a moment.</p>
+            <button type="button" class="retry-btn" onclick="insightsLoaded=false;loadInsights();">🔁 Try again</button>
+        </div>`;
+    }
 }
 
 </script>
