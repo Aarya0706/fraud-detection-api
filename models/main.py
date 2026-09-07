@@ -76,7 +76,13 @@ def _load():
 def _engineer(txn: dict):
     df = pd.DataFrame([txn])
     df = engineer_features(df)
-    return df[FEATURE_COLS].values
+    # Keep this as a DataFrame (not .values) -- train.py fits the scaler on
+    # df[FEATURE_COLS] (a DataFrame), so the scaler remembers feature names.
+    # Passing a bare ndarray here instead makes sklearn warn on every single
+    # prediction that "X does not have valid feature names, but StandardScaler
+    # was fitted with feature names". Matching dtypes avoids the warning
+    # without changing any actual values.
+    return df[FEATURE_COLS]
 
 
 def _risk_level(prob: float) -> str:

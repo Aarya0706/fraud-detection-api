@@ -14,8 +14,18 @@ session that wrote this script -- run it wherever the dataset lives).
 """
 
 import os
+import sys
 
 import pandas as pd
+
+# Running this file directly (`python scripts/verify_would_drain_orig.py`,
+# as documented above) puts scripts/ on sys.path, not the repo root -- so
+# `from models.features import ...` below fails with ModuleNotFoundError
+# unless we add the repo root ourselves. Same fix api/app.py and
+# tests/conftest.py already apply for the same reason.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
 
 from models.features import engineer_features
 

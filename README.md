@@ -36,12 +36,14 @@ Detect suspicious financial transactions in real time using an **XGBoost-powered
 # 🎥 Live Demo
 
 <p align="center">
-<img src="screenshots/demo.gif" width="95%">
+<img src="screenshots/fraud.png" width="95%">
 </p>
 
 <div align="center">
 
-*A 15–20 second walkthrough of a transaction being submitted, scored, and explained in real time.*
+*A transaction flagged CRITICAL, with SHAP attribution and rule-based
+risk factors. (Placeholder screenshot — swap for a real screen
+recording; see note below.)*
 
 </div>
 
@@ -344,6 +346,34 @@ alternative is also computed each run — see `models/metrics.json` →
 `cost_threshold` — but isn't the one currently deployed; switching to it
 is on the roadmap below.
 
+### ⚠ Two caveats behind these numbers
+
+**`would_drain_orig` dominates feature importance (~57%).** That's above
+this project's own 40% dominance-warning threshold (`train.py`'s
+`_check_for_leakage`), so it's been verified rather than assumed —
+`scripts/verify_would_drain_orig.py` shows 97.7% of fraud rows fully
+drain the sender's account, but only 0.4% of full-drain transactions are
+actually fraud. That rules out literal leakage (it's a necessary, not
+sufficient, condition, using only pre-transaction data) — but PaySim's
+own fraud generator specifically simulates fraud *as* full-account
+drains. So this feature is likely closer to "matches PaySim's synthetic
+fraud template" than a fully general real-world fraud signal, and the
+0.9997 ROC-AUC above should be read with that in mind — it may not
+transfer as-is to fraud that doesn't fully drain the account.
+
+**`recency_hours` and `txn_count_24h` carry ~0% importance.**
+`scripts/diagnose_velocity_features.py` shows why: PaySim mostly
+simulates each sender transacting once or twice across the whole
+744-step run, so `recency_hours` sits at its "no prior transaction"
+default (720) for 99.85% of rows and `txn_count_24h` is 0 for
+essentially everyone — nothing for a tree model to split on. This is a
+property of the synthetic dataset, not a bug in the velocity-feature
+code; a live deployment with a real transaction log would likely see
+far more spread. `is_dest_new`, the third velocity feature, does show a
+real (if modest) gap — 42.8% of legitimate transactions hit a new
+destination vs. 62.4% of fraud ones — but contributes only ~0.9%
+importance, likely crowded out by the two dominant features above.
+
 ---
 
 # 📈 Project Statistics
@@ -409,9 +439,14 @@ fraud-detection-api
 │
 ├── screenshots
 │
+├── scripts
+│   ├── verify_would_drain_orig.py
+│   └── diagnose_velocity_features.py
+│
 ├── tests
 │
 ├── requirements.txt
+├── requirements-dev.txt
 ├── runtime.txt
 └── README.md
 ```
@@ -484,10 +519,11 @@ frontend/index.html
 {
   "type": "TRANSFER",
   "amount": 800000,
-  "oldbalanceOrg": 900000,
-  "newbalanceOrig": 0,
+  "oldbalanceOrg": 800000,
   "oldbalanceDest": 0,
-  "newbalanceDest": 800000
+  "recency_hours": 24.0,
+  "txn_count_24h": 1,
+  "is_dest_new": 1
 }
 ```
 
@@ -495,13 +531,51 @@ frontend/index.html
 
 ```json
 {
-  "fraud_probability": 96.66,
+  "fraud_probability": 0.9997,
+  "confidence": "99.97%",
+  "threshold": "98%",
+  "is_fraud": true,
   "risk_level": "CRITICAL",
-  "confidence": "96.66%",
-  "model": "XGBoost",
-  "summary": "Large transfer with drained sender account and zero-balance destination account."
+  "model": "XGBoost Fraud Classifier v1.0",
+  "model_version": "022aa4026592",
+  "top_risk_factors": [
+    "Large transaction amount",
+    "High-risk transaction type (TRANSFER)",
+    "Transaction would fully drain sender account",
+    "Destination account has zero previous balance"
+  ],
+  "shap_top_factors": [
+    {
+      "feature": "would_drain_orig",
+      "label": "Transaction would fully drain sender's account",
+      "shap_value": 4.124,
+      "direction": "increases risk"
+    },
+    {
+      "feature": "amount_ratio_orig",
+      "label": "Amount as a share of sender's balance",
+      "shap_value": 3.645,
+      "direction": "increases risk"
+    },
+    {
+      "feature": "log_oldbalanceOrg",
+      "label": "Sender's balance before the transaction",
+      "shap_value": 2.8347,
+      "direction": "increases risk"
+    }
+  ],
+  "summary": "This TRANSFER transaction of ₹800,000.00 has been flagged as CRITICAL risk with a fraud probability of 99.97%. Key risk indicators include: Large transaction amount, High-risk transaction type (TRANSFER), Transaction would fully drain sender account, Destination account has zero previous balance.",
+  "inference_ms": 8.42
 }
 ```
+
+> Generated from a real `predict_fraud()` call against the currently
+> deployed model (`model_version` above), not hand-written -- the
+> previous version of this example used `newbalanceOrig` /
+> `newbalanceDest` fields the API no longer accepts (removed as part of
+> the leakage fix above), and showed `fraud_probability` as a percentage
+> rather than the 0–1 fraction the API actually returns. `inference_ms`
+> is illustrative; actual latency varies by deployment.
 
 ---
 

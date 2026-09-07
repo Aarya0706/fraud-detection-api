@@ -80,16 +80,16 @@ class Transaction(BaseModel):
     # POST-transaction balances that don't exist yet at authorization time,
     # and including them let the old model leak the label instead of
     # learning real fraud signal. Only pre-transaction fields below.
-    type:            str   = Field(..., example="TRANSFER",
+    type:            str   = Field(..., json_schema_extra={"example": "TRANSFER"},
                                    description="PAYMENT | TRANSFER | CASH_OUT | DEBIT | CASH_IN")
-    amount:          float = Field(..., gt=0, example=9823.50)
-    oldbalanceOrg:   float = Field(..., ge=0, example=10000.0)
-    oldbalanceDest:  float = Field(..., ge=0, example=0.0)
-    recency_hours:   float = Field(24.0, ge=0, example=1.5,
+    amount:          float = Field(..., gt=0, json_schema_extra={"example": 9823.50})
+    oldbalanceOrg:   float = Field(..., ge=0, json_schema_extra={"example": 10000.0})
+    oldbalanceDest:  float = Field(..., ge=0, json_schema_extra={"example": 0.0})
+    recency_hours:   float = Field(24.0, ge=0, json_schema_extra={"example": 1.5},
                                    description="Hours since sender's last transaction")
-    txn_count_24h:   int   = Field(1,    ge=0, example=8,
+    txn_count_24h:   int   = Field(1,    ge=0, json_schema_extra={"example": 8},
                                    description="Number of transactions by sender in last 24h")
-    is_dest_new:     int   = Field(0,    ge=0, le=1, example=1,
+    is_dest_new:     int   = Field(0,    ge=0, le=1, json_schema_extra={"example": 1},
                                    description="1 if destination account is new/unseen")
 
 

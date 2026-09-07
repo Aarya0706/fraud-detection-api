@@ -1990,12 +1990,12 @@ PaySim transactions.
 </div>
 
 <div class="stat-card">
-<h2>99%</h2>
+<h2 id="statRecall">—</h2>
 <p>Fraud Recall</p>
 </div>
 
 <div class="stat-card">
-<h2>0.9997</h2>
+<h2 id="statRocAuc">—</h2>
 <p>ROC-AUC</p>
 </div>
 
@@ -2600,8 +2600,24 @@ async function fetchModelStatus(){
             document.getElementById("msFeatures").textContent = info.features ?? "—";
             document.getElementById("msVersion").textContent = info.model_version ? info.model_version.slice(0,12) : "—";
 
-            if (info.metrics && info.metrics.threshold != null) {
-                document.getElementById("msThreshold").textContent = `${(info.metrics.threshold * 100).toFixed(0)}%`;
+            if (info.metrics && info.metrics.best_threshold != null) {
+                document.getElementById("msThreshold").textContent = `${(info.metrics.best_threshold * 100).toFixed(0)}%`;
+            }
+
+            // Hero stat cards at the top of the Transaction tab -- these used
+            // to be hardcoded (and Recall was stale: showed 99% when the
+            // real trained value is 95.68%). Populate both from the same
+            // /model/info response instead, so they can never drift from
+            // whatever model is actually deployed. Left as "—" if a fresh
+            // deploy hasn't trained a model yet (info.metrics is null).
+            if (info.metrics) {
+                if (info.metrics.roc_auc != null) {
+                    document.getElementById("statRocAuc").textContent = info.metrics.roc_auc.toFixed(4);
+                }
+                if (info.metrics.recall_fraud_class != null) {
+                    document.getElementById("statRecall").textContent =
+                        `${(info.metrics.recall_fraud_class * 100).toFixed(0)}%`;
+                }
             }
 
             return;
