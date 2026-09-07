@@ -2,115 +2,60 @@
 
 # 🛡️ FraudShield AI
 
-### Enterprise Financial Fraud Detection Platform
+### Real-Time Financial Fraud Detection with Explainable Machine Learning
 
-Detect suspicious financial transactions in real time using an **XGBoost-powered Machine Learning model** trained on **6.3+ Million PaySim transactions**.
+A production-style fraud detection platform powered by **XGBoost**, **FastAPI**, and an interactive web dashboard. Trained on **6.86M PaySim transactions** with pre-transaction features and deployed using **Vercel + Render**.
 
 <p>
 
 <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
 <img src="https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
-<img src="https://img.shields.io/badge/XGBoost-ML-AA4400?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel"/>
-<img src="https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/XGBoost-2.0.3-AA4400?style=for-the-badge"/>
 <img src="https://img.shields.io/badge/ROC--AUC-0.9997-success?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/Dataset-6.3M%20Transactions-orange?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Dataset-6.86M-orange?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Deployment-Vercel%20%2B%20Render-black?style=for-the-badge"/>
 
 </p>
 
-<p>
-
-<img src="https://img.shields.io/github/stars/Aarya0706/fraud-detection-api?style=for-the-badge"/>
-<img src="https://img.shields.io/github/forks/Aarya0706/fraud-detection-api?style=for-the-badge"/>
-<img src="https://img.shields.io/github/last-commit/Aarya0706/fraud-detection-api?style=for-the-badge"/>
-<img src="https://img.shields.io/github/license/Aarya0706/fraud-detection-api?style=for-the-badge"/>
-
-</p>
-
-### ⚡ Real-Time Fraud Detection • Explainable AI • Enterprise Dashboard
+**⚡ Real-Time Scoring · SHAP Explainability · Risk Classification · Batch Prediction · API Monitoring**
 
 </div>
 
 ---
 
-# 🎥 Live Demo
+## 🌐 Live Demo
 
-<p align="center">
-<img src="screenshots/fraud.png" width="95%">
-</p>
+| Service         | Link                                               |
+| --------------- | -------------------------------------------------- |
+| 🚀 Frontend     | https://fraud-detection-api-eta.vercel.app         |
+| ⚙️ Backend API  | https://fraud-detection-api-w9hz.onrender.com      |
+| 📚 Swagger Docs | https://fraud-detection-api-w9hz.onrender.com/docs |
 
-<div align="center">
-
-*A transaction flagged CRITICAL, with SHAP attribution and rule-based
-risk factors. (Placeholder screenshot — swap for a real screen
-recording; see note below.)*
-
-</div>
-
-| Service | Link |
-|---------|------|
-| 🚀 Frontend | https://fraud-detection-api-eta.vercel.app |
-| ⚙ Backend API | https://fraud-detection-api-w9hz.onrender.com |
-| 📚 API Documentation | https://fraud-detection-api-w9hz.onrender.com/docs |
+> **Note:** The backend uses Render's free tier and may take around **30–50 seconds** to wake after inactivity. Subsequent requests are significantly faster.
 
 ---
 
-# 💡 Why FraudShield AI?
+## 📸 Screenshots
 
-Financial fraud causes billions of dollars in losses every year.
-
-FraudShield AI demonstrates how modern machine learning can be deployed as a production-ready fraud detection platform. The project combines an XGBoost classifier, FastAPI backend, and an interactive dashboard to provide real-time fraud scoring with explainable predictions.
-
-It was designed to simulate how fraud detection systems operate in fintech and banking environments.
-
----
-
-# 📖 About
-
-FraudShield AI is an enterprise-inspired fraud detection platform that combines **Machine Learning**, **FastAPI**, and a modern interactive dashboard to detect suspicious financial transactions in real time.
-
-The application predicts fraud probability, classifies transaction risk, explains the prediction using interpretable risk indicators, and exposes a production-style REST API.
-
----
-
-# 🚀 Project Highlights
-
-- 🌐 Live Full-Stack Deployment
-- 🧠 Explainable AI
-- 📊 Enterprise Dashboard
-- ⚡ REST API
-- 📈 Production Metrics
-- 🔍 Fraud Investigation
-
----
-
-# 📸 Application Preview
-
-## 🏠 Home Dashboard
+### Dashboard
 
 <p align="center">
 <img src="screenshots/home.png" width="900"/>
 </p>
 
----
-
-## 🚨 Fraud Detection Result
+### Fraud Detection
 
 <p align="center">
 <img src="screenshots/fraud.png" width="900"/>
 </p>
 
----
-
-## ✅ Legitimate Transaction Prediction
+### Legitimate Transaction
 
 <p align="center">
 <img src="screenshots/legitimate.png" width="900"/>
 </p>
 
----
-
-## 📊 Model Insights
+### Model Insights
 
 <p align="center">
 <img src="screenshots/insights.png" width="900"/>
@@ -118,402 +63,193 @@ The application predicts fraud probability, classifies transaction risk, explain
 
 ---
 
-## 📖 About Page
+## ✨ Features
 
-<p align="center">
-<img src="screenshots/about.png" width="900"/>
-</p>
-
----
-
-## 👩‍💻 Developer Section
-
-<p align="center">
-<img src="screenshots/developer.png" width="900"/>
-</p>
-
----
-
-## 📚 Interactive API Documentation
-
-<p align="center">
-<img src="screenshots/api-docs.png" width="900"/>
-</p>
+* 🧠 **XGBoost fraud classifier**
+* ⚡ **FastAPI REST API**
+* 📈 Fraud probability and confidence scoring
+* 🚦 **LOW / MEDIUM / HIGH / CRITICAL** risk classification
+* 🔎 **Per-prediction SHAP explanations**
+* 📦 Batch prediction support
+* 📊 Runtime prediction monitoring
+* 🛡️ Rate limiting
+* 🔐 Optional API-key authentication
+* 🌍 Configured CORS protection
+* 📚 Interactive Swagger/OpenAPI documentation
+* 🌐 Live Vercel + Render deployment
 
 ---
 
-# ✨ Features
-
-| Feature | Description |
-|---------|-------------|
-| 🧠 Machine Learning | XGBoost Binary Classifier |
-| ⚡ FastAPI Backend | Production-style REST API |
-| 🌐 Interactive Dashboard | Responsive HTML/CSS/JS frontend |
-| 📈 Fraud Probability | Confidence-based prediction |
-| 🚨 Risk Classification | LOW / MEDIUM / HIGH / CRITICAL |
-| 📊 Explainable AI | Real per-prediction SHAP attribution + rule-based risk factors |
-| 📦 Batch Prediction | Multiple transactions supported |
-| 📚 Swagger Docs | Interactive API testing |
-
----
-
-# 🏗 System Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart LR
 
-A[Transaction Input]
-B[Feature Engineering]
-C[Feature Scaling]
-D[XGBoost Model]
-E[Fraud Probability]
-F[Risk Engine]
-G[FastAPI API]
-H[Enterprise Dashboard]
-
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
-F --> G
-G --> H
+A[Transaction Input] --> B[Feature Engineering]
+B --> C[Feature Scaling]
+C --> D[XGBoost Model]
+D --> E[Fraud Probability]
+E --> F[Risk Engine]
+F --> G[SHAP Explanation]
+F --> H[Monitoring]
+G --> I[FastAPI Response]
+H --> I
+I --> J[Web Dashboard]
 ```
 
----
-
-# 🌍 Deployment Architecture
+### Deployment
 
 ```text
- Browser
-     │
-     ▼
+Browser
+   │
+   ▼
 Vercel Frontend
-     │
-fetch("/predict")
-     │
-     ▼
+   │
+   │ HTTPS / JSON
+   ▼
 Render FastAPI
-     │
-     ▼
-XGBoost Model
-     │
-     ▼
-Prediction JSON
+   │
+   ├── Feature Engineering
+   ├── XGBoost Inference
+   ├── SHAP Explanation
+   └── Prediction Monitoring
+   │
+   ▼
+Prediction Response
 ```
-
-> **Note on cold starts:** The backend runs on Render's free tier, which
-> spins the service down after ~15 minutes of inactivity. If you're
-> clicking in from a cold link, the first request can take **30–50
-> seconds** to wake it up — that's expected behavior for the free tier,
-> not a bug. Subsequent requests are fast (sub-100ms inference).
-
-> **Note on API-key auth:** The API supports optional key-based auth
-> (`API_KEY` env var, checked via an `X-API-Key` header on the
-> prediction routes) but it's **off by default, intentionally**, for
-> this public demo. Abuse protection here comes from rate limiting
-> (30/min on `/predict`, 10/min on `/predict/batch`) and CORS restricted
-> to known origins, not a key — the goal is for anyone (a recruiter, a
-> reviewer) to be able to try the live demo with zero setup friction.
-> If this were deployed for real production traffic rather than a
-> portfolio demo, turning the key on would be the first thing to flip.
 
 ---
 
-# 🔄 API Response Flow
+## 🔬 How It Works
+
+### 1. Transaction Input
+
+The prediction API accepts:
 
 ```text
-User Input
-    │
-    ▼
-Feature Engineering
-    │
-    ▼
-XGBoost Model
-    │
-    ▼
-Fraud Probability
-    │
-    ▼
-Risk Classification
-    │
-    ▼
-AI Summary
-    │
-    ▼
-Dashboard
+type
+amount
+oldbalanceOrg
+oldbalanceDest
+recency_hours
+txn_count_24h
+is_dest_new
 ```
 
----
+Post-transaction fields such as `newbalanceOrig` and `newbalanceDest` are **not used**, avoiding direct post-transaction information leakage.
 
-# ⚙ How It Works
+### 2. Feature Engineering
 
-## 1️⃣ Transaction Input
+The model uses **10 engineered features**, including:
 
-The user enters:
+* Transaction type encoding
+* Log-transformed transaction amount
+* Sender/receiver balance transformations
+* Amount-to-balance ratio
+* Account-drain indicator
+* Destination balance anomaly
+* New-destination indicator
+* Transaction recency
+* 24-hour transaction count
 
-- Transaction Type
-- Amount
-- Sender Balance
-- Receiver Balance
-- Transaction Metadata
+### 3. Model Prediction
 
-↓
+The XGBoost classifier outputs a fraud probability between **0 and 1**.
 
-## 2️⃣ Feature Engineering
-
-The system creates model-ready features including:
-
-- Transaction Encoding
-- Log Amount
-- Balance Difference
-- Account Drain Flag
-- Destination Account Risk
-- Amount Ratio
-
-↓
-
-## 3️⃣ Machine Learning Prediction
-
-The engineered features are passed through the trained **XGBoost Classifier**.
-
-Outputs:
-
-- Fraud Probability
-- Confidence Score
-
-↓
-
-## 4️⃣ Decision Engine
-
-The prediction is compared with the production threshold and categorized into:
-
-- 🟢 LOW
-- 🟡 MEDIUM
-- 🟠 HIGH
-- 🔴 CRITICAL
-
-↓
-
-## 5️⃣ Explainability Layer
-
-FraudShield identifies the major reasons behind the prediction.
-
-Example risk indicators:
-
-- Large Transaction
-- Fully Drained Sender
-- High Risk Transaction Type
-- New Destination Account
-
-↓
-
-## 6️⃣ Dashboard
-
-The enterprise dashboard displays:
-
-- Fraud Probability
-- Risk Level
-- Confidence Score
-- AI Summary
-- Risk Factors
-
----
-
-# 📊 Model Performance
-
-> **Note:** These numbers are from the first real training run against the
-> full PaySim dataset after the leakage fix (trained 2026-09-06, XGBoost
-> 2.0.3) — not the pre-fix, leaky-feature numbers this table used to show.
-> Full metrics are saved automatically to `models/metrics.json` on every
-> `python -m models.train` run (also surfaced at `GET /model/info`), so
-> this table reflects whichever training run produced the currently
-> deployed model.
-
-| Metric | Score |
-|---------|------:|
-| ROC-AUC | 0.9997 |
-| PR-AUC | 0.9933 |
-| Precision (fraud class) | 95.39% |
-| Recall (fraud class) | 95.68% |
-| F1 Score (fraud class) | 0.9553 |
-| Accuracy | 99.99% |
-| Dataset | 6,864,402 rows (5,591,878 train / 1,272,524 test) |
-
-Decision threshold: **0.984**, selected by max-F1 on the precision-recall
-curve (`THRESHOLD_STRATEGY=f1`, the current default). A cost-weighted
-alternative is also computed each run — see `models/metrics.json` →
-`cost_threshold` — but isn't the one currently deployed; switching to it
-is on the roadmap below.
-
-### ⚠ Two caveats behind these numbers
-
-**`would_drain_orig` dominates feature importance (~57%).** That's above
-this project's own 40% dominance-warning threshold (`train.py`'s
-`_check_for_leakage`), so it's been verified rather than assumed —
-`scripts/verify_would_drain_orig.py` shows 97.7% of fraud rows fully
-drain the sender's account, but only 0.4% of full-drain transactions are
-actually fraud. That rules out literal leakage (it's a necessary, not
-sufficient, condition, using only pre-transaction data) — but PaySim's
-own fraud generator specifically simulates fraud *as* full-account
-drains. So this feature is likely closer to "matches PaySim's synthetic
-fraud template" than a fully general real-world fraud signal, and the
-0.9997 ROC-AUC above should be read with that in mind — it may not
-transfer as-is to fraud that doesn't fully drain the account.
-
-**`recency_hours` and `txn_count_24h` carry ~0% importance.**
-`scripts/diagnose_velocity_features.py` shows why: PaySim mostly
-simulates each sender transacting once or twice across the whole
-744-step run, so `recency_hours` sits at its "no prior transaction"
-default (720) for 99.85% of rows and `txn_count_24h` is 0 for
-essentially everyone — nothing for a tree model to split on. This is a
-property of the synthetic dataset, not a bug in the velocity-feature
-code; a live deployment with a real transaction log would likely see
-far more spread. `is_dest_new`, the third velocity feature, does show a
-real (if modest) gap — 42.8% of legitimate transactions hit a new
-destination vs. 62.4% of fraud ones — but contributes only ~0.9%
-importance, likely crowded out by the two dominant features above.
-
----
-
-# 📈 Project Statistics
-
-- ✔ 6.86 Million PaySim Transactions (train + test)
-- ✔ 10 Engineered Features
-- ✔ XGBoost Binary Classifier
-- ✔ ROC-AUC 0.9997 · Precision 95.39% · Recall 95.68% (real post-fix numbers, see above)
-- ✔ Sub-100ms Inference
-- ✔ Vercel + Render Deployment
-
----
-
-# 🛠 Tech Stack
-
-**Backend**
-Python • FastAPI • Uvicorn
-
-**Machine Learning**
-XGBoost • Scikit-Learn • Pandas • NumPy
-
-**Frontend**
-HTML5 • CSS3 • JavaScript
-
-**Deployment**
-Vercel • Render
-
-| Category | Technology |
-|-----------|------------|
-| Frontend | HTML5, CSS3, JavaScript |
-| Backend | FastAPI, Uvicorn |
-| Machine Learning | XGBoost |
-| Data Processing | Pandas, NumPy |
-| Utilities | Scikit-Learn, Joblib |
-| Validation | Pydantic |
-| Deployment | Vercel + Render |
-| Dataset | PaySim |
-
----
-
-# 📂 Project Structure
+The current F1-optimized decision threshold is approximately:
 
 ```text
-fraud-detection-api
-│
-├── api
-│   └── app.py
-│
-├── frontend
-│   ├── index.html
-│   ├── avatar.jpg
-│   └── favicon.ico
-│
-├── models
-│   ├── train.py
-│   ├── main.py
-│   ├── features.py
-│   ├── scaler.pkl
-│   ├── threshold.pkl
-│   ├── xgb_fraud.json
-│   ├── feature_names.pkl
-│   └── feature_importance.csv
-│
-├── screenshots
-│
-├── scripts
-│   ├── verify_would_drain_orig.py
-│   └── diagnose_velocity_features.py
-│
-├── tests
-│
-├── requirements.txt
-├── requirements-dev.txt
-├── runtime.txt
-└── README.md
+0.984
 ```
+
+### 4. Risk Classification
+
+```text
+< 0.30        → LOW
+0.30–0.59     → MEDIUM
+0.60–0.84     → HIGH
+≥ 0.85        → CRITICAL
+```
+
+### 5. Explainability
+
+Predictions can include:
+
+* Top rule-based risk factors
+* Top SHAP feature contributions
+* Direction of each contribution
+* Human-readable prediction summary
 
 ---
 
-# 🚀 Installation
+## 📊 Model Performance
 
-## Clone Repository
+Current metrics from the latest training run:
 
-```bash
-git clone https://github.com/Aarya0706/fraud-detection-api.git
-cd fraud-detection-api
-```
+| Metric        |         Score |
+| ------------- | ------------: |
+| ROC-AUC       |    **0.9997** |
+| PR-AUC        |    **0.9933** |
+| Precision     |    **95.39%** |
+| Recall        |    **95.68%** |
+| F1 Score      |    **0.9553** |
+| Accuracy      |    **99.99%** |
+| Training Rows | **5,591,878** |
+| Test Rows     | **1,272,524** |
+| Total Rows    | **6,864,402** |
+| Features      |        **10** |
+| F1 Threshold  |    **0.9839** |
 
-## Create Virtual Environment
+### ⚠️ Important
 
-```bash
-python -m venv .venv
-```
+These metrics are **PaySim benchmark results**, not a guarantee of real-world banking performance.
 
-Windows
+PaySim is a synthetic dataset whose fraud-generation process differs from real financial systems. The feature `would_drain_orig` contributes roughly **57% of feature importance** and strongly aligns with PaySim's synthetic fraud pattern.
 
-```bash
-.venv\Scripts\activate
-```
-
-Linux / macOS
-
-```bash
-source .venv/bin/activate
-```
-
-## Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## Start FastAPI
-
-```bash
-uvicorn api.app:app --reload
-```
-
-Open
-
-```
-frontend/index.html
-```
+Therefore, the **0.9997 ROC-AUC should be interpreted as a dataset benchmark**, not as expected production accuracy.
 
 ---
 
-# 🌐 REST API
+## 🔌 REST API
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | /predict | Predict one transaction |
-| POST | /predict/batch | Batch prediction |
-| GET | /health | API health |
-| GET | /model/info | Model information |
+| Method | Endpoint               | Description                |
+| ------ | ---------------------- | -------------------------- |
+| `GET`  | `/health`              | Service health             |
+| `GET`  | `/model/info`          | Model metadata and metrics |
+| `GET`  | `/metrics/predictions` | Runtime prediction metrics |
+| `POST` | `/predict`             | Predict one transaction    |
+| `POST` | `/predict/batch`       | Batch prediction           |
+
+Swagger documentation is available at:
+
+```text
+/docs
+```
+
+### API Protection
+
+```text
+/predict        → 30 requests/minute
+/predict/batch  → 10 requests/minute
+```
+
+Optional API-key authentication can be enabled using:
+
+```text
+API_KEY
+```
+
+with the request header:
+
+```text
+X-API-Key: <your-api-key>
+```
+
+The public demo leaves API-key authentication disabled so users can test the application without credentials.
 
 ---
 
-# 🧪 Sample Prediction
-
-### Request
+## 🧪 Example Request
 
 ```json
 {
@@ -537,84 +273,203 @@ frontend/index.html
   "is_fraud": true,
   "risk_level": "CRITICAL",
   "model": "XGBoost Fraud Classifier v1.0",
-  "model_version": "022aa4026592",
+  "model_version": "<model hash>",
   "top_risk_factors": [
     "Large transaction amount",
     "High-risk transaction type (TRANSFER)",
-    "Transaction would fully drain sender account",
-    "Destination account has zero previous balance"
+    "Transaction would fully drain sender account"
   ],
   "shap_top_factors": [
     {
       "feature": "would_drain_orig",
-      "label": "Transaction would fully drain sender's account",
-      "shap_value": 4.124,
-      "direction": "increases risk"
-    },
-    {
-      "feature": "amount_ratio_orig",
-      "label": "Amount as a share of sender's balance",
-      "shap_value": 3.645,
-      "direction": "increases risk"
-    },
-    {
-      "feature": "log_oldbalanceOrg",
-      "label": "Sender's balance before the transaction",
-      "shap_value": 2.8347,
       "direction": "increases risk"
     }
   ],
-  "summary": "This TRANSFER transaction of ₹800,000.00 has been flagged as CRITICAL risk with a fraud probability of 99.97%. Key risk indicators include: Large transaction amount, High-risk transaction type (TRANSFER), Transaction would fully drain sender account, Destination account has zero previous balance.",
   "inference_ms": 8.42
 }
 ```
 
-> Generated from a real `predict_fraud()` call against the currently
-> deployed model (`model_version` above), not hand-written -- the
-> previous version of this example used `newbalanceOrig` /
-> `newbalanceDest` fields the API no longer accepts (removed as part of
-> the leakage fix above), and showed `fraud_probability` as a percentage
-> rather than the 0–1 fraction the API actually returns. `inference_ms`
-> is illustrative; actual latency varies by deployment.
+> `fraud_probability` is returned as a **0–1 value**, while `confidence` is formatted as a percentage.
 
 ---
 
-# 🛣 Roadmap
+## 📈 Monitoring & Model Versioning
 
-- [x] Real-time fraud prediction
-- [x] FastAPI backend
-- [x] Vercel deployment
-- [x] Render deployment
-- [x] Interactive dashboard
-- [x] SHAP explainability
-- [x] Docker support
-- [ ] User authentication
-- [ ] Persistent transaction history
+The API tracks lightweight runtime information including:
+
+* Model version
+* Fraud probability
+* Risk level
+* Prediction decision
+* Inference latency
+* Endpoint usage
+
+Runtime metrics are available through:
+
+```text
+GET /metrics/predictions
+```
+
+The monitoring state is in-memory and resets when the backend process restarts.
+
+Model artifacts use a short **SHA-256 model hash** for version identification.
+
+Training metrics are stored in:
+
+```text
+models/metrics.json
+```
 
 ---
 
-# 🚀 Future Enhancements
+## 🛠️ Tech Stack
 
-- 🤖 LLM-powered Investigation Reports
-- ☁ Kubernetes Support
-- 👤 Authentication & RBAC
-- 📈 Enterprise Analytics Dashboard
-- 📱 Mobile Version
+| Area           | Technologies                    |
+| -------------- | ------------------------------- |
+| Backend        | Python, FastAPI, Uvicorn        |
+| ML             | XGBoost, Scikit-Learn           |
+| Data           | Pandas, NumPy                   |
+| Validation     | Pydantic                        |
+| API Protection | SlowAPI, CORS, optional API key |
+| Frontend       | HTML, CSS, JavaScript           |
+| Deployment     | Vercel, Render                  |
+| Dataset        | PaySim                          |
 
 ---
 
-# 👩‍💻 Developer
+## 📂 Project Structure
+
+```text
+fraud-detection-api/
+│
+├── api/
+│   └── app.py
+│
+├── models/
+│   ├── train.py
+│   ├── main.py
+│   ├── features.py
+│   ├── monitoring.py
+│   ├── metrics.json
+│   ├── model_registry.jsonl
+│   ├── scaler.pkl
+│   ├── threshold.pkl
+│   ├── xgb_fraud.json
+│   ├── feature_names.pkl
+│   └── feature_importance.csv
+│
+├── frontend/
+│   ├── index.html
+│   ├── avatar.jpg
+│   └── favicon.ico
+│
+├── scripts/
+│   ├── verify_would_drain_orig.py
+│   └── diagnose_velocity_features.py
+│
+├── screenshots/
+├── tests/
+├── requirements.txt
+├── requirements-dev.txt
+├── runtime.txt
+└── README.md
+```
+
+---
+
+## 🚀 Run Locally
+
+### Clone
+
+```bash
+git clone https://github.com/Aarya0706/fraud-detection-api.git
+cd fraud-detection-api
+```
+
+### Create Environment
+
+```bash
+python -m venv .venv
+```
+
+**Windows**
+
+```bash
+.venv\Scripts\activate
+```
+
+**Linux / macOS**
+
+```bash
+source .venv/bin/activate
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Start API
+
+```bash
+uvicorn api.app:app --reload
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## 🧪 Training Diagnostics
+
+The project includes diagnostic scripts for evaluating the most influential and temporal features:
+
+```bash
+python scripts/verify_would_drain_orig.py
+python scripts/diagnose_velocity_features.py
+```
+
+Training metrics are automatically written to:
+
+```text
+models/metrics.json
+```
+
+---
+
+## 🗺️ Roadmap
+
+* [x] Real-time fraud prediction
+* [x] FastAPI backend
+* [x] Interactive dashboard
+* [x] Vercel deployment
+* [x] Render deployment
+* [x] SHAP explainability
+* [x] Model version hashing
+* [x] Prediction monitoring
+* [x] Rate limiting
+* [x] Optional API-key authentication
+* [ ] Persistent transaction history
+* [ ] User authentication / RBAC
+* [ ] LLM-assisted fraud investigation
+* [ ] Enterprise analytics dashboard
+
+---
+
+## 👩‍💻 Developer
 
 <p align="center">
-<img src="screenshots/developer-photo.jpeg" width="220" style="border-radius:50%;">
+<img src="screenshots/developer-photo.jpeg" width="200"/>
 </p>
 
-## Aarya Shirsath
+### Aarya Shirsath
 
-B.Tech Computer Science Engineering
-VIT Bhopal University
-
-### Connect with me
+**B.Tech Computer Science Engineering**
+**VIT Bhopal University**
 
 <p>
 
@@ -632,10 +487,8 @@ VIT Bhopal University
 
 <div align="center">
 
-⭐ If you found this project useful, consider giving it a star.
+⭐ If you found FraudShield AI useful, consider giving the repository a star.
 
-Made with ❤️ by **Aarya Shirsath**
-
-B.Tech CSE • VIT Bhopal University
+**Made with ❤️ by Aarya Shirsath**
 
 </div>
