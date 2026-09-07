@@ -50,7 +50,15 @@ REGISTRY_PATH = os.path.join(MODEL_DIR, "model_registry.jsonl")
 # mid-simulation), so even the pre-transaction oldbalanceOrg/oldbalanceDest
 # could end up leaking signal, not just the post-transaction ones we already
 # excluded. These constants drive a post-training sanity check for that.
-LEAKAGE_WATCH_FEATURES = {"log_oldbalanceOrg", "log_oldbalanceDest"}
+#
+# would_drain_orig is included here too: it has repeatedly shown up as the
+# single dominant feature (~57% of total importance) in training runs,
+# which is the textbook symptom this check exists to catch. If it's
+# engineered from oldbalanceOrg/amount (pre-transaction fields), it may be
+# legitimate signal rather than leakage -- but a share this large still
+# warrants inspecting df.groupby('isFraud')['would_drain_orig'].describe()
+# before trusting the model, exactly as the warning below suggests.
+LEAKAGE_WATCH_FEATURES = {"log_oldbalanceOrg", "log_oldbalanceDest", "would_drain_orig"}
 DOMINANCE_THRESHOLD = 0.40  # one feature owning >=40% of importance is suspicious
 
 # ── Threshold calibration by business cost (PRD §5) ─────────────────
@@ -436,7 +444,8 @@ def _check_for_leakage(importance: pd.DataFrame):
     importance, since that's a common symptom of label leakage (it's
     exactly how the old newbalanceOrig leak would have looked). Extra
     attention on the balance columns per Kaggle's own note about the
-    dataset -- see LEAKAGE_WATCH_FEATURES above.
+    dataset, and on would_drain_orig which has repeatedly shown up as
+    the dominant feature in practice -- see LEAKAGE_WATCH_FEATURES above.
     """
     total = importance["Importance"].sum()
     if total <= 0:
@@ -451,7 +460,8 @@ def _check_for_leakage(importance: pd.DataFrame):
 
     if top_share >= DOMINANCE_THRESHOLD:
         note = (
-            " (a balance column -- see the leakage note in models/features.py)"
+            " (a watched feature -- see the leakage note in models/features.py "
+            "and LEAKAGE_WATCH_FEATURES in models/train.py)"
             if top_feature in LEAKAGE_WATCH_FEATURES else ""
         )
         print(
@@ -469,7 +479,7 @@ def _check_for_leakage(importance: pd.DataFrame):
         )
         print(
             f"No single feature dominates (top: '{top_feature}' at "
-            f"{top_share:.0%}). Balance-column features account for "
+            f"{top_share:.0%}). Watched features account for "
             f"{watched_share:.0%} of total importance combined -- within a "
             f"normal range."
         )
