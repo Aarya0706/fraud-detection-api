@@ -1,0 +1,1 @@
+{"model_version": "022aa4026592", "trained_at_utc": "2026-09-06T15:50:27.327492+00:00", "roc_auc": 0.9997065511821448, "pr_auc": 0.9932828142409822, "best_threshold": 0.9839122891426086, "threshold_strategy": "f1", "f1_threshold": 0.9839122891426086, "cost_threshold": 0.66, "n_train_rows": 5591878, "n_test_rows": 1272524}

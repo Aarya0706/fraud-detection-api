@@ -1,0 +1,34 @@
+{
+  "trained_at_utc": "2026-09-06T15:50:26.769958+00:00",
+  "python_version": "3.12.7",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "xgboost_version": "2.0.3",
+  "n_features": 10,
+  "n_train_rows": 5591878,
+  "n_test_rows": 1272524,
+  "best_threshold": 0.9839122891426086,
+  "threshold_strategy": "f1",
+  "f1_threshold": 0.9839122891426086,
+  "cost_threshold": 0.66,
+  "cost_threshold_assumptions": {
+    "cost_false_positive": 5.0,
+    "cost_false_negative": 100.0,
+    "total_cost_at_cost_threshold": 1660.0
+  },
+  "roc_auc": 0.9997065511821448,
+  "pr_auc": 0.9932828142409822,
+  "precision_fraud_class": 0.9538834951456311,
+  "recall_fraud_class": 0.9567863664029215,
+  "f1_fraud_class": 0.9553327256153145,
+  "accuracy": 0.9998844815500533,
+  "confusion_matrix": [
+    [
+      1270805,
+      76
+    ],
+    [
+      71,
+      1572
+    ]
+  ]
+}
