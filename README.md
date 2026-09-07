@@ -320,31 +320,38 @@ The enterprise dashboard displays:
 
 # 📊 Model Performance
 
-> **Note:** The numbers below (0.9997 ROC-AUC, 99%+ precision/recall) were
-> from an earlier version of the model that turned out to be leaking the
-> label through post-transaction balance fields — see the leakage fix in
-> the changelog. They no longer reflect the current model and are kept
-> here only as a historical marker until the next training run.
-> `python -m models.train` now saves real metrics to `models/metrics.json`
-> automatically (also surfaced at `GET /model/info`), so this table will
-> be updated with an honest number the next time the model is retrained.
+> **Note:** These numbers are from the first real training run against the
+> full PaySim dataset after the leakage fix (trained 2026-09-06, XGBoost
+> 2.0.3) — not the pre-fix, leaky-feature numbers this table used to show.
+> Full metrics are saved automatically to `models/metrics.json` on every
+> `python -m models.train` run (also surfaced at `GET /model/info`), so
+> this table reflects whichever training run produced the currently
+> deployed model.
 
-| Metric | Score (pre-fix, stale) |
+| Metric | Score |
 |---------|------:|
 | ROC-AUC | 0.9997 |
-| Precision | 99.24% |
-| Recall | 99.00% |
-| F1 Score | 0.9948 |
-| Dataset | 6.3+ Million Transactions |
+| PR-AUC | 0.9933 |
+| Precision (fraud class) | 95.39% |
+| Recall (fraud class) | 95.68% |
+| F1 Score (fraud class) | 0.9553 |
+| Accuracy | 99.99% |
+| Dataset | 6,864,402 rows (5,591,878 train / 1,272,524 test) |
+
+Decision threshold: **0.984**, selected by max-F1 on the precision-recall
+curve (`THRESHOLD_STRATEGY=f1`, the current default). A cost-weighted
+alternative is also computed each run — see `models/metrics.json` →
+`cost_threshold` — but isn't the one currently deployed; switching to it
+is on the roadmap below.
 
 ---
 
 # 📈 Project Statistics
 
-- ✔ 6.3 Million PaySim Transactions
+- ✔ 6.86 Million PaySim Transactions (train + test)
 - ✔ 10 Engineered Features
 - ✔ XGBoost Binary Classifier
-- ⏳ ROC-AUC / Precision / Recall: pending post-fix retrain (see note above)
+- ✔ ROC-AUC 0.9997 · Precision 95.39% · Recall 95.68% (real post-fix numbers, see above)
 - ✔ Sub-100ms Inference
 - ✔ Vercel + Render Deployment
 
