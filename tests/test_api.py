@@ -133,8 +133,22 @@ def test_predict_rejects_unknown_type_end_to_end():
     """
     The unknown-type rejection (models/features.py raising ValueError) must
     surface as a client error through the API, not a silent PAYMENT default
-    and not an unhandled 500.
+    and not an unhandled 500 -- and by default the response must NOT leak
+    the raw internal exception text (see _safe_error_detail in api/app.py).
     """
+    bad_txn = {**VALID_TXN, "type": "WIRE_TRANSFER"}
+    resp = client.post("/predict", json=bad_txn)
+    assert resp.status_code == 500
+    detail = resp.json()["detail"]
+    assert detail == "Internal error while scoring this transaction."
+    assert "Unknown transaction type" not in detail
+
+
+def test_predict_exposes_real_error_under_api_debug(monkeypatch):
+    """API_DEBUG=true is the opt-in escape hatch for local development --
+    with it set, the real exception text should come through instead of
+    the generic message."""
+    monkeypatch.setenv("API_DEBUG", "true")
     bad_txn = {**VALID_TXN, "type": "WIRE_TRANSFER"}
     resp = client.post("/predict", json=bad_txn)
     assert resp.status_code == 500

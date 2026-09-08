@@ -64,18 +64,44 @@ DOMINANCE_THRESHOLD = 0.40  # one feature owning >=40% of importance is suspicio
 # ── Threshold calibration by business cost (PRD §5) ─────────────────
 # Max-F1 picks a threshold that's statistically balanced, not one that
 # reflects what a false positive vs. a false negative actually *costs* a
-# real deployment. These defaults are illustrative placeholders -- a
-# real deployment would set them from actual $ figures (e.g. average
-# cost of a manual fraud review vs. average confirmed-fraud loss
-# amount). Override without a code change via env vars.
+# real deployment. The 5 / 100 figures below are SIMULATED business
+# assumptions chosen to illustrate the mechanism (a missed fraud costing
+# ~20x more than an unnecessary manual review) -- they are not calibrated
+# against any real $ figures (e.g. actual average cost of a manual fraud
+# review, or actual average confirmed-fraud loss amount). Treat every
+# number downstream of these two (cost_threshold, total_cost_at_cost_threshold)
+# as demonstrating the *approach*, not as a production-ready estimate.
+# Override without a code change via env vars.
 COST_FALSE_POSITIVE = float(os.environ.get("COST_FALSE_POSITIVE", 5))
 COST_FALSE_NEGATIVE = float(os.environ.get("COST_FALSE_NEGATIVE", 100))
+COST_ASSUMPTIONS_NOTE = (
+    "Simulated business assumptions for illustration only -- not calibrated "
+    "against real fraud-review or fraud-loss figures. Override via "
+    "COST_FALSE_POSITIVE / COST_FALSE_NEGATIVE env vars with real numbers "
+    "before using this threshold in any production decision."
+)
 # Which threshold actually gets saved to threshold.pkl and used live.
 # "f1" (default) preserves existing behavior; "cost" switches to the
 # cost-minimizing threshold below. Mirrors the API_KEY pattern elsewhere
 # in this project: the capability exists, but rollout is an explicit
 # opt-in decision, not a silent behavior change.
 THRESHOLD_STRATEGY = os.environ.get("THRESHOLD_STRATEGY", "f1").lower()
+
+# ── Train/test split strategy ────────────────────────────────────────
+# recency_hours / txn_count_24h are derived from the full event log's
+# time ordering (see add_velocity_features), which makes this dataset's
+# evaluation split a materially different decision than a normal IID
+# classification problem. A random split can let a test row's velocity
+# features be informed by sender activity that, chronologically, happened
+# after it -- and, more subtly, lets the model be evaluated on a temporal
+# distribution it was also trained on, which a live system never sees
+# (production always predicts on transactions that happen *after* all
+# its training data). "time" (default) instead sorts by PaySim's `step`
+# (simulated hour) and holds out the most recent slice as test, which is
+# the closer analogue to real deployment. "random" preserves the original
+# stratified IID split for comparison/back-compat.
+SPLIT_STRATEGY = os.environ.get("SPLIT_STRATEGY", "time").lower()
+TEST_SIZE = 0.2
 
 
 def load_data():
@@ -153,6 +179,54 @@ def _thin_curve(*arrays, max_points=60):
     return [np.asarray(a)[idx].tolist() for a in arrays]
 
 
+def _split_dataset(df):
+    """
+    Splits into train/test using SPLIT_STRATEGY (see the module-level note
+    above). Returns (X_train, X_test, y_train, y_test) with columns
+    restricted to FEATURE_COLS, matching train_test_split's return shape
+    so callers don't care which strategy produced them.
+    """
+    if SPLIT_STRATEGY == "time":
+        df_sorted = df.sort_values("step", kind="mergesort")
+        split_idx = int(len(df_sorted) * (1 - TEST_SIZE))
+        train_df = df_sorted.iloc[:split_idx]
+        test_df = df_sorted.iloc[split_idx:]
+
+        train_fraud_rate = train_df["isFraud"].mean()
+        test_fraud_rate = test_df["isFraud"].mean()
+        print(
+            f"Time-aware split: train = steps up to {train_df['step'].max()} "
+            f"({len(train_df):,} rows, {train_fraud_rate*100:.4f}% fraud), "
+            f"test = steps from {test_df['step'].min()} onward "
+            f"({len(test_df):,} rows, {test_fraud_rate*100:.4f}% fraud)"
+        )
+        if train_df["isFraud"].sum() == 0 or test_df["isFraud"].sum() == 0:
+            raise ValueError(
+                "Time-aware split produced a train or test set with zero "
+                "fraud rows -- widen the dataset or fall back to "
+                "SPLIT_STRATEGY=random for this sample."
+            )
+
+        return (
+            train_df[FEATURE_COLS], test_df[FEATURE_COLS],
+            train_df["isFraud"], test_df["isFraud"],
+        )
+
+    print(
+        "Random IID split (SPLIT_STRATEGY=random) -- kept for comparison "
+        "only. Not recommended as the primary evaluation for this model: "
+        "recency_hours/txn_count_24h are derived from the full event log's "
+        "time order, so a random split lets test rows sit chronologically "
+        "interleaved with training rows in a way a live deployment never "
+        "would. Prefer SPLIT_STRATEGY=time (the default)."
+    )
+    X = df[FEATURE_COLS]
+    y = df["isFraud"]
+    return train_test_split(
+        X, y, test_size=TEST_SIZE, stratify=y, random_state=SEED,
+    )
+
+
 def train():
     df = load_data()
 
@@ -162,17 +236,8 @@ def train():
     print("Engineering features...")
     df = engineer_features(df)
 
-    X = df[FEATURE_COLS]
-    y = df["isFraud"]
-
     print("Splitting dataset...")
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        stratify=y,
-        random_state=SEED,
-    )
+    X_train, X_test, y_train, y_test = _split_dataset(df)
 
     scaler = StandardScaler()
 
@@ -293,6 +358,7 @@ def train():
         cost_threshold=cost_threshold,
         cost_value=cost_value,
         threshold_strategy=THRESHOLD_STRATEGY,
+        split_strategy=SPLIT_STRATEGY,
         n_train_rows=len(X_train),
         n_test_rows=len(X_test),
         roc_curve_points={"fpr": thinned_fpr, "tpr": thinned_tpr},
@@ -309,6 +375,7 @@ def train():
         f1_threshold=f1_threshold,
         cost_threshold=cost_threshold,
         threshold_strategy=THRESHOLD_STRATEGY,
+        split_strategy=SPLIT_STRATEGY,
         n_train_rows=len(X_train),
         n_test_rows=len(X_test),
     )
@@ -320,8 +387,9 @@ def train():
     
 def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
                   f1_threshold, cost_threshold, cost_value, threshold_strategy,
-                  n_train_rows, n_test_rows, roc_curve_points=None,
-                  pr_curve_points=None, feature_importance=None):
+                  n_train_rows, n_test_rows, split_strategy="time",
+                  roc_curve_points=None, pr_curve_points=None,
+                  feature_importance=None):
     """
     Persists the metrics train.py already prints to stdout, so there's a
     single source of truth for "what's the real accuracy now" instead of
@@ -347,6 +415,7 @@ def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
         "n_features": len(FEATURE_COLS),
         "n_train_rows": int(n_train_rows),
         "n_test_rows": int(n_test_rows),
+        "split_strategy": split_strategy,
         "best_threshold": float(best_threshold),
         "threshold_strategy": threshold_strategy,
         "f1_threshold": float(f1_threshold),
@@ -355,6 +424,7 @@ def save_metrics(roc_auc, pr_auc, report, confusion, best_threshold,
             "cost_false_positive": COST_FALSE_POSITIVE,
             "cost_false_negative": COST_FALSE_NEGATIVE,
             "total_cost_at_cost_threshold": float(cost_value),
+            "note": COST_ASSUMPTIONS_NOTE,
         },
         "roc_auc": float(roc_auc),
         "pr_auc": float(pr_auc),
@@ -386,7 +456,7 @@ def _compute_model_version(model_path):
 
 def append_to_registry(model_version, roc_auc, pr_auc, best_threshold,
                         f1_threshold, cost_threshold, threshold_strategy,
-                        n_train_rows, n_test_rows):
+                        n_train_rows, n_test_rows, split_strategy="time"):
     """
     Appends one line per training run to models/model_registry.jsonl --
     an append-only log of every model version ever produced, so past
@@ -409,6 +479,7 @@ def append_to_registry(model_version, roc_auc, pr_auc, best_threshold,
         "threshold_strategy": threshold_strategy,
         "f1_threshold": float(f1_threshold),
         "cost_threshold": float(cost_threshold),
+        "split_strategy": split_strategy,
         "n_train_rows": int(n_train_rows),
         "n_test_rows": int(n_test_rows),
     }

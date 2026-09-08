@@ -13,6 +13,7 @@ Run:
 """
 
 import json
+import logging
 import time
 from typing import List, Optional
 
@@ -35,6 +36,33 @@ from models.monitoring import log_prediction, get_summary as get_monitoring_summ
 
 METRICS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "metrics.json")
 REGISTRY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "model_registry.jsonl")
+
+logger = logging.getLogger("fraud_api")
+
+# ── Internal-error disclosure ────────────────────────────────────────
+# Off by default: unexpected exceptions are logged in full server-side but
+# returned to the caller as a generic message, since raw exception text
+# (str(e)) can leak internal paths, library versions, or data values that
+# have no business being in an HTTP response. Set API_DEBUG=true only for
+# local development, when you actually want to see the real exception in
+# the response body instead of the server log. Read fresh on every call
+# (rather than cached at import time) so it can be toggled per-process
+# without restarting, and so tests can exercise both modes.
+_GENERIC_PREDICT_ERROR = "Internal error while scoring this transaction."
+
+
+def _api_debug_enabled() -> bool:
+    return os.environ.get("API_DEBUG", "false").lower() in ("1", "true", "yes")
+
+
+def _safe_error_detail(exc: Exception, context: str) -> str:
+    """
+    Logs the real exception (with traceback) server-side unconditionally,
+    and returns what's safe to hand back to the caller: the real message
+    only under API_DEBUG, a generic one otherwise.
+    """
+    logger.exception("Unhandled error in %s", context)
+    return str(exc) if _api_debug_enabled() else _GENERIC_PREDICT_ERROR
 
 
 def _load_metrics():
@@ -259,7 +287,7 @@ def predict(request: Request, txn: Transaction, _auth: bool = Security(require_a
             detail="Model not found. Run `python models/train.py` first."
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=_safe_error_detail(e, "/predict"))
 
     inference_ms = round((time.time() - t0) * 1000, 2)
     log_prediction(
@@ -292,6 +320,9 @@ def predict_batch(request: Request, req: BatchRequest, _auth: bool = Security(re
             # Must populate every PredictionResponse field, or FastAPI raises
             # a 500 Pydantic validation error for this row and takes the
             # whole batch down with it -- defeating the point of a fallback.
+            # The real exception is logged server-side; the response only
+            # ever gets the raw message back under API_DEBUG (see /predict).
+            detail = _safe_error_detail(e, "/predict/batch")
             r = {
                 "fraud_probability": 0.0,
                 "confidence": "0%",
@@ -300,7 +331,7 @@ def predict_batch(request: Request, req: BatchRequest, _auth: bool = Security(re
                 "risk_level": "UNKNOWN",
                 "model": "N/A",
                 "top_risk_factors": [],
-                "summary": f"Error scoring this transaction: {str(e)}",
+                "summary": f"Error scoring this transaction: {detail}",
             }
         row_inference_ms = round((time.time() - t_start) * 1000, 2)
         log_prediction(

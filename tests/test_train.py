@@ -49,8 +49,14 @@ def _synthetic_paysim_df(n_legit=300, n_fraud=12, seed=0):
 
     for i in range(n_fraud):
         balance = rng.uniform(100, 10_000)
+        # Spread fraud rows evenly across the full step range (rather than
+        # drawing them uniformly at random, which can by chance leave one
+        # side of a chronological split with zero fraud rows in a sample
+        # this small) so both the time-aware and random split strategies
+        # have fraud examples on both sides of the split in tests.
+        step = int(1 + (i / max(n_fraud - 1, 1)) * 490)
         rows.append({
-            "step": int(rng.integers(1, 500)),
+            "step": step,
             "type": rng.choice(["TRANSFER", "CASH_OUT"]),
             "amount": balance,  # drains the account -- the real signal
             "nameOrig": f"F{i}",
@@ -230,3 +236,59 @@ def test_train_cost_strategy_selects_cost_threshold(isolated_model_dir, monkeypa
 
     assert metrics["threshold_strategy"] == "cost"
     assert metrics["best_threshold"] == pytest.approx(metrics["cost_threshold"])
+
+
+# ── Time-aware evaluation split ─────────────────────────────────────
+
+def test_time_split_is_chronologically_non_overlapping():
+    """
+    recency_hours/txn_count_24h are derived from the full event log's time
+    order, so the default split must hold out the *latest* slice of steps
+    as test -- every training step must come no later than every test
+    step, unlike a random/stratified split which interleaves them.
+    """
+    df = _synthetic_paysim_df()
+    from models.features import engineer_features, add_velocity_features
+    df = add_velocity_features(df)
+    df = engineer_features(df)
+
+    X_train, X_test, y_train, y_test = train_module._split_dataset(df)
+
+    train_idx = X_train.index
+    test_idx = X_test.index
+    assert df.loc[train_idx, "step"].max() <= df.loc[test_idx, "step"].min()
+    assert y_train.sum() > 0 and y_test.sum() > 0
+    assert len(X_train) + len(X_test) == len(df)
+
+
+def test_random_split_strategy_still_available(monkeypatch):
+    """SPLIT_STRATEGY=random preserves the original stratified IID split,
+    for comparison / back-compat with prior training runs."""
+    df = _synthetic_paysim_df()
+    from models.features import engineer_features, add_velocity_features
+    df = add_velocity_features(df)
+    df = engineer_features(df)
+
+    monkeypatch.setattr(train_module, "SPLIT_STRATEGY", "random")
+    X_train, X_test, y_train, y_test = train_module._split_dataset(df)
+
+    assert len(X_train) + len(X_test) == len(df)
+    assert y_train.sum() > 0 and y_test.sum() > 0
+
+
+def test_train_records_split_strategy(isolated_model_dir, monkeypatch):
+    """metrics.json and the registry should record which split strategy
+    produced the reported numbers, since it changes what the ROC-AUC/PR-AUC
+    figures actually mean for this kind of time-derived-feature model."""
+    df = _synthetic_paysim_df()
+    monkeypatch.setattr(train_module, "load_data", lambda: df)
+
+    train_module.train()
+
+    with open(train_module.METRICS_PATH) as f:
+        metrics = json.load(f)
+    assert metrics["split_strategy"] == "time"
+
+    with open(train_module.REGISTRY_PATH) as f:
+        entry = json.loads(f.readline())
+    assert entry["split_strategy"] == "time"

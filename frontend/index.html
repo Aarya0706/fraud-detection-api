@@ -2367,11 +2367,14 @@ Account &amp; behavior signals
             <div class="eng-note-title">📏 One threshold, two candidates</div>
             <div class="eng-note-body">
                 The deployed decision threshold is <code>0.984</code>, chosen by max-F1 on the
-                precision-recall curve. A cost-weighted alternative (<code>~0.66</code>, under an
-                assumed cost of 5 for a false positive and 100 for a missed fraud) is computed on
-                every training run too, but isn't live yet — swapping between the two is a
-                one-line config change (<code>THRESHOLD_STRATEGY</code>), deliberately left as an
-                explicit decision rather than silently auto-selected.
+                precision-recall curve. A cost-weighted alternative (<code>~0.66</code>) is also
+                computed on every training run, using a simulated cost of 5 for a false positive
+                and 100 for a missed fraud — illustrative numbers picked to demonstrate the
+                mechanism, not figures calibrated against any real review cost or fraud-loss
+                data. Swapping between the two is a one-line config change
+                (<code>THRESHOLD_STRATEGY</code>), deliberately left as an explicit decision
+                rather than silently auto-selected — and a real deployment would replace the cost
+                constants with real numbers before switching to it.
             </div>
         </div>
 
